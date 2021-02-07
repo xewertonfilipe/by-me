@@ -1,23 +1,23 @@
 <template>
     <div>
-    <!-- <FormLogin />
-    <FormAccount />
-    <Menu /> -->
-    <Map />
+    <FormLogin />
+    <!-- <FormAccount /> -->
+    <!-- <Menu /> -->
+    <!-- <Map /> -->
     </div>
 </template>
 
 <script>
-// import FormLogin from '../../Form/FormLogin/FormLogin'
+import FormLogin from '../../Form/FormLogin/FormLogin'
 // import FormAccount from '../../Form/FormAccount/FormAccount'
 // import Menu from '../../Menu/Menu'
-import Map from '../../Map/Map'
+// import Map from '../../SearchPlace/Search'
 export default {
     components: {
-        // FormLogin,
+        FormLogin
         // FormAccount
         // Menu
-        Map
+        // Map
     }
 }
 </script>

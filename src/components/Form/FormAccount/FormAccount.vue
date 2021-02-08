@@ -2,21 +2,6 @@
   <div>
     <b-form @submit.stop.prevent="register" v-if="show">
       <b-form-group
-        id="account-name"
-      >
-        <b-form-input
-          id="input-account-name"
-          v-model="$v.form.name.$model"
-          :state="validateState('name')"
-          type="text"
-          placeholder="Nome"
-          aria-describedby="required-name"
-        ></b-form-input>
-
-        <b-form-invalid-feedback id="required-name">Obrigatório.</b-form-invalid-feedback>
-      </b-form-group>
-      
-      <b-form-group
         id="account-email"
       >
         <b-form-input
@@ -32,10 +17,10 @@
       </b-form-group>
 
       <b-form-group 
-        id="account-first-password"
+        id="account-password"
       >
         <b-form-input
-          id="input-first-password"
+          id="input-password"
           v-model="$v.form.password.$model"
           :state="validateState('password')"
           type="password"
@@ -44,21 +29,6 @@
         ></b-form-input>
 
         <b-form-invalid-feedback id="required-password">Obrigatório.</b-form-invalid-feedback>
-      </b-form-group>
-
-      <b-form-group 
-        id="account-password-confirmation"
-      >
-        <b-form-input
-          id="input-password-confirmation"
-          v-model="$v.form.password_confirmation.$model"
-          :state="validateState('password_confirmation')"
-          type="password"
-          placeholder="Confirmar senha"
-          aria-describedby="required-password-confirmation"
-        ></b-form-input>
-
-        <b-form-invalid-feedback id="required-password-confirmation">Obrigatório.</b-form-invalid-feedback>
       </b-form-group>
 
       <b-button type="submit" variant="success" pill>Criar Conta</b-button>
@@ -82,20 +52,14 @@ import { required, minLength } from "vuelidate/lib/validators";
     data() {
       return {
         form: {
-          name : "",
           email : "",
           password : "",
-          password_confirmation : "",
         },
         show: true
       }
     },
     validations: {
       form: {
-        nome: {
-          required,
-          minLength: minLength(3)
-        },
         email: {
           required,
         },
@@ -103,10 +67,6 @@ import { required, minLength } from "vuelidate/lib/validators";
           required,
           minLength: minLength(4)
         },
-        password_confirmation: {
-          required,
-          minLength: minLength(4)
-        }
       }
     },
     methods: {
@@ -115,11 +75,18 @@ import { required, minLength } from "vuelidate/lib/validators";
         return $dirty ? !$error: null;
       },
       register() {
+        let data = {
+          email: this.$v.form.email.$model,
+          password: this.$v.form.password.$model,
+        }
+        this.$store.dispatch('register', data)
+       .then(() => this.$router.push('/'))
+       .catch(err => console.log(err));
+        
         this.$v.form.$touch();
         if (this.$v.form.$anyError) {
           return;
         }
-        alert(JSON.stringify(this.form))
       },
     }
   }

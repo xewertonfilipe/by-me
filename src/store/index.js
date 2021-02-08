@@ -74,6 +74,8 @@ const store = new Vuex.Store({
           });
       });
     },
+    existingAccount() {},
+
     logout({ commit }) {
       return new Promise((resolve) => {
         commit("logout");

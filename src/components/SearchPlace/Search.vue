@@ -63,9 +63,6 @@
 </template>
 
 <script>
-
-import axios from "axios";
-
 export default {
     data() {
         return {
@@ -119,7 +116,7 @@ export default {
             //For Cors add https://cors-anywhere.herokuapp.com/URL
             const URL = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.coordinates.lat},${this.coordinates.lng}&keyword=${this.searchFor}&radius=${this.radius}&key=${this.key}`;
             
-            axios
+            this.$axios
                 .get(URL)
                 .then(response => {
                     console.log("Result", response.data.results);

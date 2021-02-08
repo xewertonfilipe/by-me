@@ -1,6 +1,8 @@
 <template>
-  <div>
-    <b-form @submit.stop.prevent="onSubmit" v-if="show">
+  <div class="container">
+    <!-- <p v-if="loginError">Usuário não cadastrado.</p>
+    <p v-if="loginSuccessful">Login Ok</p> -->
+    <b-form @submit.stop.prevent="loginSubmit" v-if="show">
       <b-form-group
         id="login-email"
       >
@@ -32,7 +34,10 @@
       </b-form-group>
 
       <b-button type="submit" pill>Entrar</b-button>
-      <b-button variant="success" pill>Criar Conta</b-button>
+      
+      <router-link to="/cadastro">
+        <b-button variant="success" pill>Criar Conta</b-button>
+      </router-link>
     </b-form>
     <b-card class="mt-3" header="Form Data Result">
       <pre class="m-0">{{ form }}</pre>
@@ -71,14 +76,20 @@ import { required, minLength } from "vuelidate/lib/validators";
         const {$dirty, $error} = this.$v.form[value];
         return $dirty ? !$error: null;
       },
-      onSubmit(event) {
-        event.preventDefault()
+      loginSubmit() {
+        let email = this.$v.form.email.$model
+        let password = this.$v.form.pass.$model
+        this.$store.dispatch('login', { email, password })
+       .then(() => this.$router.push({ name: "busca" }))
+       .catch(err => console.log(err))
+        
         this.$v.form.$touch();
         if (this.$v.form.$anyError) {
           return;
         }
-        alert(JSON.stringify(this.form))
       },
-    }
+    },
+    computed: {
+    },
   }
 </script>

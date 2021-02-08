@@ -1,6 +1,21 @@
 <template>
   <div>
-    <b-form @submit.stop.prevent="onSubmit" v-if="show">
+    <b-form @submit.stop.prevent="register" v-if="show">
+      <b-form-group
+        id="account-name"
+      >
+        <b-form-input
+          id="input-account-name"
+          v-model="$v.form.name.$model"
+          :state="validateState('name')"
+          type="text"
+          placeholder="Nome"
+          aria-describedby="required-name"
+        ></b-form-input>
+
+        <b-form-invalid-feedback id="required-name">Obrigatório.</b-form-invalid-feedback>
+      </b-form-group>
+      
       <b-form-group
         id="account-email"
       >
@@ -17,36 +32,40 @@
       </b-form-group>
 
       <b-form-group 
-        id="account-first-pass"
+        id="account-first-password"
       >
         <b-form-input
-          id="input-first-pass"
-          v-model="$v.form.firstPass.$model"
-          :state="validateState('firstPass')"
+          id="input-first-password"
+          v-model="$v.form.password.$model"
+          :state="validateState('password')"
           type="password"
           placeholder="Senha"
-          aria-describedby="required-pass"
+          aria-describedby="required-password"
         ></b-form-input>
 
-        <b-form-invalid-feedback id="required-pass">Obrigatório.</b-form-invalid-feedback>
+        <b-form-invalid-feedback id="required-password">Obrigatório.</b-form-invalid-feedback>
       </b-form-group>
 
       <b-form-group 
-        id="account-second-pass"
+        id="account-password-confirmation"
       >
         <b-form-input
-          id="input-second-pass"
-          v-model="$v.form.secondPass.$model"
-          :state="validateState('secondPass')"
+          id="input-password-confirmation"
+          v-model="$v.form.password_confirmation.$model"
+          :state="validateState('password_confirmation')"
           type="password"
           placeholder="Confirmar senha"
-          aria-describedby="required-pass"
+          aria-describedby="required-password-confirmation"
         ></b-form-input>
 
-        <b-form-invalid-feedback id="required-pass">Obrigatório.</b-form-invalid-feedback>
+        <b-form-invalid-feedback id="required-password-confirmation">Obrigatório.</b-form-invalid-feedback>
       </b-form-group>
 
       <b-button type="submit" variant="success" pill>Criar Conta</b-button>
+
+       <router-link to="/">
+        <b-button variant="success" pill>Voltar</b-button>
+      </router-link>
     </b-form>
     <b-card class="mt-3" header="Form Data Result">
       <pre class="m-0">{{ form }}</pre>
@@ -63,23 +82,28 @@ import { required, minLength } from "vuelidate/lib/validators";
     data() {
       return {
         form: {
-          email: '',
-          firstPass: '',
-          secondPass: '',
+          name : "",
+          email : "",
+          password : "",
+          password_confirmation : "",
         },
         show: true
       }
     },
     validations: {
       form: {
+        nome: {
+          required,
+          minLength: minLength(3)
+        },
         email: {
           required,
         },
-        firstPass: {
+        password: {
           required,
           minLength: minLength(4)
         },
-        secondPass: {
+        password_confirmation: {
           required,
           minLength: minLength(4)
         }
@@ -90,8 +114,7 @@ import { required, minLength } from "vuelidate/lib/validators";
         const {$dirty, $error} = this.$v.form[value];
         return $dirty ? !$error: null;
       },
-      onSubmit(event) {
-        event.preventDefault()
+      register() {
         this.$v.form.$touch();
         if (this.$v.form.$anyError) {
           return;

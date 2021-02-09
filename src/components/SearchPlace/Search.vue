@@ -3,58 +3,69 @@
         <div>
             <input v-model="searchFor" type="text" placeholder="Pesquise no ByMe">
             <button v-on:click.prevent="locate">Permitir localização</button>
-            <button v-on:click.prevent="findPlaces">Procurar</button>
+            <button v-on:click="findPlaces">Procurar</button>
         </div>
     
-        <b-list-group v-for="place in places" :key="place.id">
+        <b-list-group v-for="(local, index) in places" :key="index">
             <b-list-group-item>
                 <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">{{place.name}}</h5>
-                    <small>Favorito</small>
+                    <h5 class="mb-1">{{local.name}}</h5>
+                    <small><star-rating v-bind:max-rating="1" v-bind:show-rating="false"></star-rating></small>
                 </div>
                 <p class="mb-1">
-                    {{place.vicinity}}
+                    {{local.vicinity}}
                 </p>
 
                 <div>
-                    <b-button variant="info" class="btn-comments" id="show-btn" v-on:click="showModal(place.place_id)">Comentários</b-button>
-                    <b-button variant="success"  id="show-btn-rate" v-on:click="showModal(place.place_id+1)">Avaliar</b-button>
+                    <b-button v-on:click="showModal(local.place_id), newListComments()" variant="info" class="btn-comments" id="show-btn">Comentários</b-button>
+                    <b-button v-on:click="showModal(local.place_id+1)" variant="success"  id="show-btn-rate" >Avaliar</b-button>
 
-                    <b-modal :ref="place.place_id" hide-footer>
+                    <b-modal :ref="local.place_id" hide-footer>
                         <template #modal-title>
-                            {{place.name}}
+                            {{local.name}}
                         </template>
-                        <div class="d-block text-center">
-                            <b-card-group v-for="(comment) in comments" :key="comment.id" deck>
-                                <b-card v-if="comment.id == place.place_id" header="User comment" class="text-center">
-                                    <b-card-text>{{comment.info}}</b-card-text>
+                            <b-card-group v-for="(comment, index) in allComments" :key="index" class="d-block text-center" deck>
+                                <div v-if="comment.id == local.place_id">
+                                    <b-card v-for="(info, index) in comment.info" :key="index" header="User comment" class="text-center spacing-top">
+                                    <star-rating read-only v-model="info.rating"></star-rating>
+                                    <b-card-text>{{info.message}}</b-card-text>
                                 </b-card>
+                                </div>
                             </b-card-group>
-                            <br>
-                        </div>
                     </b-modal>
 
-                    <b-modal :ref="place.place_id+1" hide-footer>
+                    <b-modal :ref="local.place_id+1" hide-footer @hidden="clearValue">
                         <template #modal-title>
-                            {{place.name}}
+                            {{local.name}}
                         </template>
-                        <div>
-                            <b-form-textarea
-                                id="textarea"
-                                v-model="text"
+                        <b-form @submit.stop.prevent="addComments(local.place_id)">
+                            <star-rating @rating-selected="setRating"></star-rating>
+                            <b-form-group
+                                id="comment-text"
+                            >
+                                <b-form-textarea
+                                id="comment-textarea"
+                                v-model="$v.form.text.$model"
+                                :state="validateState('text')"
                                 placeholder="Comentário..."
                                 rows="1"
                                 max-rows="3"
-                            ></b-form-textarea>
-                        </div>
-                        <div class="addComent">
-                            <b-button 
-                                v-on:click="addComments(place.place_id), hideModal(place.place_id+1)" 
-                                block
-                                squared
-                                variant="outline-primary"
-                            >Comentar</b-button>
-                        </div>
+                                aria-describedby="required-textarea"
+                                ></b-form-textarea>
+
+                                <b-form-invalid-feedback id="required-textarea">Obrigatório.</b-form-invalid-feedback>
+
+                                <div class="spacing-top">
+                                    <b-button 
+                                        type="submit"
+                                        block
+                                        squared
+                                        variant="outline-primary"
+                                    >Comentar</b-button>
+                                </div>
+                            </b-form-group>
+                            
+                        </b-form>                       
                     </b-modal>
                 </div>
             </b-list-group-item>
@@ -63,7 +74,15 @@
 </template>
 
 <script>
+import { validationMixin } from "vuelidate";
+import { required, minLength } from "vuelidate/lib/validators";
+import StarRating from 'vue-star-rating'
+
 export default {
+    components: {
+        StarRating
+    },
+    mixins: [validationMixin],
     data() {
         return {
             coordinates: {
@@ -71,31 +90,55 @@ export default {
                 lng: 0
             },
             searchFor: "",
-            text: "",
+            form: {
+                text: "",
+                rating: 0,
+            },
             radius: 5000,
             places: [],
-            favorite: [],
+            favoritesUsers: [],
+            newsComments: [],
+            allComments: [],
             comments: [{
-                id: "ChIJg7E35KQZqwcRgNT9YzxIRaA",
+                id: "ChIJUwgu86sZqwcRCzsc964cW84",
                 info: [{
-                        userComment: {},
-                        message: "Ok."
+                        user: {},
+                        message: "Ok.",
+                        rating: 3,
+                        favorite: 1
+                    },{
+                        user: {},
+                        message: "Nice",
+                        rating: 5,
+                        favorite: 0
                     }]
             },{
                 id: "ChIJj02Y0UwZqwcRxzV2ecjz5Ac",
                 info: [{
-                        userComment: {},
-                        message: "Its god."
+                        user: {},
+                        message: "Its god.",
+                        rating: 4,
+                        favorite: 1
                     }]
             },{
                 id: "ChIJd_G937sZqwcRQUpWEOCJPF8",
                 info: [{
-                        userComment: {},
-                        message: "Its great."
+                        user: {},
+                        message: "Its great.",
+                        rating: 4,
+                        favorite: 1
                     }]
             }],
             key: "AIzaSyDJVZPOwzIn--aX6FRwqTB_V_L1O6Skb-Q"
         }
+    },
+    validations: {
+      form: {
+        text: {
+          required,
+          minLength: minLength(4)
+        }
+      }
     },
     created() {
         this.$getLocation({})
@@ -105,6 +148,10 @@ export default {
             .catch(error => console.error("windowsLocation ", error));
     },
     methods: {
+        validateState(value) {
+            const {$dirty, $error} = this.$v.form[value];
+            return $dirty ? !$error: null;
+        },
         locate() {
             this.$getLocation({})
             .then(coordinates => {
@@ -113,7 +160,7 @@ export default {
             .catch(error => console.error("locate", error));
         },
         findPlaces() {
-            //For Cors add https://cors-anywhere.herokuapp.com/URL
+            //For Cors add https://cors-anywhere.herokuapp.com/
             const URL = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.coordinates.lat},${this.coordinates.lng}&keyword=${this.searchFor}&radius=${this.radius}&key=${this.key}`;
             
             this.$axios
@@ -125,36 +172,55 @@ export default {
                 .catch(error => {
                     console.log("find", error.message);
                 })
+                console.log("Refs", this.$refs);
+                this.listFavorites();
+        },
+        listPlaceUser() {
+            //Param: userLogged
+            
+
+        },
+        listFavorites() {
+            return this.comments.map((comment) => {
+                return comment.info.map((info) => {
+                    return info.favorite;
+                });
+            })
         },
         addComments(place_id) {
-            this.searchPlaceIdInComments(place_id);
-            this.clearValue();
-        },
-        searchPlaceIdInComments(place_id) {
-            const newComment = this.comments;
-            newComment.forEach(function(comment) {
-                if (comment.id === place_id) {
-                    this.comments.info.unshift({
-                        userComment: {},
-                        message: this.text
-                    });
-                } else {
-                    this.comments.unshift({
-                    id: place_id,
-                    info: {
-                        userComment: {},
-                        message: this.text
-                    }
-                    });
-                }
+            if(this.validateForm()) {
+                return;
+            }
+            this.newsComments.push({
+                id: place_id,
+                info: [{
+                        user: {},
+                        message: this.$v.form.text.$model,
+                        rating: this.getRating()
+                    }]
             });
+            this.clearValue();
+            this.hideModal(place_id+1);
+        },
+        setRating(rating) {
+            this.form.rating = rating;
+        },
+        getRating() {
+            return this.form.rating;
+        },
+        validateForm() {
+            this.$v.form.$touch();
+            if(this.$v.form.$anyError) {
+                return true;
+            }
+        },
+        newListComments() {
+            this.allComments = [...this.comments, ...this.newsComments];
         },
         clearValue() {
-            this.text = "";
+            this.$v.form.text.$model = "";
         },
         showModal(place_id) {
-            console.log("place_id", place_id);
-            console.log("refs", this.$refs[place_id][0]);
             this.$refs[place_id][0].show();
         },
         hideModal(place_id) {
@@ -168,7 +234,7 @@ export default {
     .btn-comments {
         margin-right: 5px;
     }
-    .addComent {
+    .spacing-top {
         margin-top: 5px;
     }
 </style>

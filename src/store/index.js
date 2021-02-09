@@ -52,6 +52,7 @@ const store = new Vuex.Store({
       });
     },
     register({ commit }, user) {
+      console.log("User register", user);
       return new Promise((resolve, reject) => {
         commit("auth_request");
         axios({

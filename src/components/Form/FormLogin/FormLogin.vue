@@ -1,7 +1,5 @@
 <template>
   <div class="container">
-    <!-- <p v-if="loginError">Usuário não cadastrado.</p>
-    <p v-if="loginSuccessful">Login Ok</p> -->
     <b-form @submit.stop.prevent="loginSubmit" v-if="show">
       <b-form-group
         id="login-email"

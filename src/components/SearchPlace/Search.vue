@@ -1,16 +1,37 @@
 <template>
-    <div>
-        <div>
-            <input v-model="searchFor" type="text" placeholder="Pesquise no ByMe">
-            <button v-on:click.prevent="locate">Permitir localização</button>
-            <button v-on:click="findPlaces">Procurar</button>
-        </div>
+    <b-container>
+        <Menu />
+        <b-row>
+            <b-col>
+                <b-form @submit.stop.prevent="findPlaces">
+                <b-form-group id="search-place">
+                    <b-input-group>
+                        <b-input-group-prepend>
+                            <b-button variant="outline-info" type="submit">Buscar</b-button>
+                        </b-input-group-prepend>
+                        <b-form-input
+                            id="input-search-place"
+                            v-model="$v.form.searchFor.$model"
+                            :state="validateState('searchFor')"
+                            type="text"
+                            aria-describedby="required-searchFor"
+                        ></b-form-input>
+                        <b-input-group-append>
+                            <b-button variant="outline-secondary" v-on:click.prevent="locate">Permitir localização</b-button>
+                        </b-input-group-append>
+                    </b-input-group>
+                </b-form-group>
+            </b-form>
+            </b-col>
+        </b-row>
     
         <b-list-group v-for="(local, index) in places" :key="index">
             <b-list-group-item>
                 <div class="d-flex w-100 justify-content-between">
                     <h5 class="mb-1">{{local.name}}</h5>
-                    <small><star-rating v-bind:max-rating="1" v-bind:show-rating="false"></star-rating></small>
+                        <small>
+                            <star-rating v-bind:max-rating="1" v-bind:show-rating="false" ></star-rating>
+                        </small>
                 </div>
                 <p class="mb-1">
                     {{local.vicinity}}
@@ -70,17 +91,19 @@
                 </div>
             </b-list-group-item>
         </b-list-group>
-    </div>
+    </b-container>
 </template>
 
 <script>
+import Menu from "@/components/Menu/Menu.vue"
 import { validationMixin } from "vuelidate";
 import { required, minLength } from "vuelidate/lib/validators";
 import StarRating from 'vue-star-rating'
 
 export default {
     components: {
-        StarRating
+        StarRating,
+        Menu
     },
     mixins: [validationMixin],
     data() {
@@ -89,25 +112,38 @@ export default {
                 lat: 0,
                 lng: 0
             },
-            searchFor: "",
             form: {
                 text: "",
                 rating: 0,
+                searchFor: ""
             },
+            favorite: false,
             radius: 5000,
             places: [],
             favoritesUsers: [],
+            allFavorites: [],
+            newsFavorites: [],
             newsComments: [],
             allComments: [],
             comments: [{
                 id: "ChIJUwgu86sZqwcRCzsc964cW84",
                 info: [{
-                        user: {},
+                        user: [{
+                            id: 1,
+                            Name: '',
+                            email: '',
+                            logged: true,
+                        }],
                         message: "Ok.",
                         rating: 3,
                         favorite: 1
                     },{
-                        user: {},
+                        user: [{
+                            id: 2,
+                            Name: '',
+                            email: '',
+                            logged: true,
+                        }],
                         message: "Nice",
                         rating: 5,
                         favorite: 0
@@ -115,15 +151,20 @@ export default {
             },{
                 id: "ChIJj02Y0UwZqwcRxzV2ecjz5Ac",
                 info: [{
-                        user: {},
+                        user: [{
+                            id: 3,
+                            Name: '',
+                            email: '',
+                            logged: true,
+                        }],
                         message: "Its god.",
                         rating: 4,
-                        favorite: 1
+                        favorite: 0
                     }]
             },{
                 id: "ChIJd_G937sZqwcRQUpWEOCJPF8",
                 info: [{
-                        user: {},
+                        user: [],
                         message: "Its great.",
                         rating: 4,
                         favorite: 1
@@ -137,6 +178,10 @@ export default {
         text: {
           required,
           minLength: minLength(4)
+        },
+        searchFor: {
+            required,
+            minLength: minLength(2)
         }
       }
     },
@@ -160,8 +205,12 @@ export default {
             .catch(error => console.error("locate", error));
         },
         findPlaces() {
+            if(this.isEmpty(this.form.searchFor)) {
+                this.validateForm();
+                return
+            }
             //For Cors add https://cors-anywhere.herokuapp.com/
-            const URL = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.coordinates.lat},${this.coordinates.lng}&keyword=${this.searchFor}&radius=${this.radius}&key=${this.key}`;
+            const URL = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.coordinates.lat},${this.coordinates.lng}&keyword=${this.form.searchFor}&radius=${this.radius}&key=${this.key}`;
             
             this.$axios
                 .get(URL)
@@ -174,6 +223,15 @@ export default {
                 })
                 console.log("Refs", this.$refs);
                 this.listFavorites();
+
+                this.$v.form.$touch();
+                if (this.$v.form.$anyError) {
+                    return;
+                }
+        },
+        isEmpty(value) {
+            if(value.trim() == "")
+                return true;
         },
         listPlaceUser() {
             //Param: userLogged
@@ -208,6 +266,15 @@ export default {
         getRating() {
             return this.form.rating;
         },
+        toggleFavorite() {
+
+        },
+        setfavorite(value) {
+            this.favorite = value;
+        },
+        getFvorite() {
+            return this.favorite;
+        },
         validateForm() {
             this.$v.form.$touch();
             if(this.$v.form.$anyError) {
@@ -236,5 +303,8 @@ export default {
     }
     .spacing-top {
         margin-top: 5px;
+    }
+    .row-size {
+        width: 400px;
     }
 </style>

@@ -22,6 +22,14 @@ const store = new Vuex.Store({
     auth_error(state) {
       state.status = "error";
     },
+    auth_get_user(state) {
+      state.status = "success";
+    },
+    auth_update(state, name, email) {
+      state.status = "success";
+      state.name = name;
+      state.email = email;
+    },
     logout(state) {
       state.status = "";
       state.token = "";
@@ -38,10 +46,9 @@ const store = new Vuex.Store({
         })
           .then((resp) => {
             const token = resp.data.token;
-            const user = resp.data.user;
             localStorage.setItem("token", token);
             axios.defaults.headers.common["Authorization"] = token;
-            commit("auth_success", token, user);
+            commit("auth_success", token);
             resolve(resp);
           })
           .catch((err) => {
@@ -52,7 +59,6 @@ const store = new Vuex.Store({
       });
     },
     register({ commit }, user) {
-      console.log("User register", user);
       return new Promise((resolve, reject) => {
         commit("auth_request");
         axios({
@@ -61,8 +67,8 @@ const store = new Vuex.Store({
           method: "POST",
         })
           .then((resp) => {
+            const user = resp.data.id;
             const token = resp.data.token;
-            const user = resp.data.user;
             localStorage.setItem("token", token);
             axios.defaults.headers.common["Authorization"] = token;
             commit("auth_success", token, user);
@@ -75,8 +81,47 @@ const store = new Vuex.Store({
           });
       });
     },
-    existingAccount() {},
-
+    update({ commit }, user) {
+      //fake profile
+      return new Promise((resolve, reject) => {
+        commit("auth_request");
+        axios({
+          url: "https://reqres.in/api/users/2",
+          data: user,
+          method: "PUT",
+        })
+          .then((resp) => {
+            const name = resp.data.first_name;
+            const email = resp.data.email;
+            console.log("resp", resp);
+            commit("auth_update", name, email);
+            resolve(resp);
+          })
+          .catch((err) => {
+            commit("auth_error", err);
+            reject(err);
+          });
+      });
+    },
+    getProfile({ commit }, user) {
+      // fake profile
+      return new Promise((resolve, reject) => {
+        commit("auth_request");
+        axios({
+          url: "https://reqres.in/api/users/2",
+          data: user,
+          method: "GET",
+        })
+          .then((resp) => {
+            commit("auth_get_user");
+            resolve(resp);
+          })
+          .catch((err) => {
+            commit("auth_error");
+            reject(err);
+          });
+      });
+    },
     logout({ commit }) {
       return new Promise((resolve) => {
         commit("logout");

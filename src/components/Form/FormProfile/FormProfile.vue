@@ -1,41 +1,29 @@
 <template>
   <div>
     <b-form @submit.stop.prevent="register" v-if="show">
-      <b-form-group
-        id="account-email"
-      >
+      <b-form-group id="profile-first-name">
         <b-form-input
-          id="input-account-email"
-          v-model="$v.form.email.$model"
-          :state="validateState('email')"
-          type="email"
-          placeholder="E-mail"
-          aria-describedby="required-email"
+          id="input-first-name"
+          v-model="firstName"
+          :state="validateState('firstName')"
+          type="text"
+          placeholder="Nome"
+          aria-describedby="required-name"
         ></b-form-input>
-
-        <b-form-invalid-feedback id="required-email">Obrigatório.</b-form-invalid-feedback>
+        <b-form-invalid-feedback id="required-name">Obrigatório.</b-form-invalid-feedback>
       </b-form-group>
-
-      <b-form-group 
-        id="account-password"
-      >
+      <b-form-group id="profile-last-name">
         <b-form-input
           id="input-password"
-          v-model="$v.form.password.$model"
-          :state="validateState('password')"
-          type="password"
-          placeholder="Senha"
-          aria-describedby="required-password"
+          v-model="lastName"
+          :state="validateState('lastName')"
+          type="text"
+          placeholder="Sobre nome"
+          aria-describedby="required-last-name"
         ></b-form-input>
-
-        <b-form-invalid-feedback id="required-password">Obrigatório.</b-form-invalid-feedback>
+        <b-form-invalid-feedback id="required-last-name">Obrigatório.</b-form-invalid-feedback>
       </b-form-group>
-
-      <b-button type="submit" variant="success" pill>Criar Conta</b-button>
-
-       <router-link to="/">
-        <b-button variant="success" pill>Voltar</b-button>
-      </router-link>
+      <b-button type="submit" variant="success" pill>Editar Perfil</b-button>
     </b-form>
   </div>
 </template>

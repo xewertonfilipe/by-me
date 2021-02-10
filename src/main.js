@@ -14,7 +14,6 @@ const token = localStorage.getItem("token");
 if (token) {
   Vue.prototype.$axios.defaults.headers.common["Authorization"] = token;
 }
-
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 Vue.config.productionTip = false;

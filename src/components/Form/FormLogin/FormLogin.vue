@@ -1,6 +1,6 @@
 <template>
   <b-container>
-    <b-form @submit.stop.prevent="loginSubmit" v-if="show">
+    <b-form @submit.stop.prevent="login" v-if="show">
       <b-form-group id="login-email">
         <b-form-input
           id="input-login-email"
@@ -9,6 +9,7 @@
           type="email"
           placeholder="E-mail"
           aria-describedby="required-email"
+          autocomplete="off"
         ></b-form-input>
         <b-form-invalid-feedback id="required-email">Obrigatório.</b-form-invalid-feedback>
       </b-form-group>
@@ -40,8 +41,8 @@ import { required, minLength } from "vuelidate/lib/validators";
     data() {
       return {
         form: {
-          email: '',
-          pass: '',
+          email: "",
+          pass: "",
         },
         show: true
       }
@@ -58,24 +59,34 @@ import { required, minLength } from "vuelidate/lib/validators";
       }
     },
     methods: {
-      validateState(value) {
-        const {$dirty, $error} = this.$v.form[value];
-        return $dirty ? !$error: null;
-      },
-      loginSubmit() {
-        let email = this.$v.form.email.$model
-        let password = this.$v.form.pass.$model
-        this.$store.dispatch('login', { email, password })
-       .then(() => this.$router.push({ name: "busca" }))
-       .catch(err => console.log(err))
-        
-        this.$v.form.$touch();
-        if (this.$v.form.$anyError) {
-          return;
+      login() {
+        this.formValidate();
+        if(this.isFormEmpty()) {
+            return;
         }
+        let data = {
+          email: this.$v.form.email.$model,
+          password: this.$v.form.pass.$model,
+        }
+        this.$store.dispatch('login', data)
+       .then(() => this.$router.push({ name: "app" }))
+       .catch(err => console.log(err))
       },
-    },
-    computed: {
+      validateState(value) {
+            const {$dirty, $error} = this.$v.form[value];
+            return $dirty ? !$error: null;
+      },
+      formValidate() {
+          this.$v.form.$touch();
+          if(this.$v.form.$anyError) {
+              return;
+          }
+      },
+      isFormEmpty() {
+          if(this.form.email.trim() === "" || this.form.pass.trim() === ""){
+              return true;
+          }
+      }
     },
   }
 </script>

@@ -1,6 +1,5 @@
 <template>
-    <b-container>
-        <Menu />
+    <b-container class="place">
         <b-row>
             <b-col>
                 <b-form @submit.stop.prevent="findPlaces">
@@ -30,26 +29,25 @@
                 <div class="d-flex w-100 justify-content-between">
                     <h5 class="mb-1">{{local.name}}</h5>
                         <small>
-                            <star-rating v-bind:max-rating="1" v-bind:show-rating="false" ></star-rating>
+                            <star-rating v-bind:max-rating="1" v-bind:show-rating="false" v-bind:star-size="30"></star-rating>
                         </small>
                 </div>
                 <p class="mb-1">
                     {{local.vicinity}}
                 </p>
-
                 <div>
                     <b-button v-on:click="showModal(local.place_id), newListComments()" variant="info" class="btn-comments" id="show-btn">Comentários</b-button>
                     <b-button v-on:click="showModal(local.place_id+1)" variant="success"  id="show-btn-rate" >Avaliar</b-button>
 
-                    <b-modal :ref="local.place_id" hide-footer>
+                    <b-modal :ref="local.place_id" hide-footer class="overflow">
                         <template #modal-title>
                             {{local.name}}
                         </template>
-                            <b-card-group v-for="(comment, index) in allComments" :key="index" class="d-block text-center" deck>
+                            <b-card-group v-for="(comment, index) in allComments" :key="index" class="d-block text-center" deck style="max-height: 20rem;"> 
                                 <div v-if="comment.id == local.place_id">
                                     <b-card v-for="(info, index) in comment.info" :key="index" header="User comment" class="text-center spacing-top">
-                                    <star-rating read-only v-model="info.rating"></star-rating>
-                                    <b-card-text>{{info.message}}</b-card-text>
+                                        <star-rating read-only v-model="info.rating" v-bind:show-rating="false" v-bind:star-size="25" class="start-comment"></star-rating>
+                                    <b-card-text class="message">{{info.message}}</b-card-text>
                                 </b-card>
                                 </div>
                             </b-card-group>
@@ -60,11 +58,11 @@
                             {{local.name}}
                         </template>
                         <b-form @submit.stop.prevent="addComments(local.place_id)">
-                            <star-rating @rating-selected="setRating"></star-rating>
+                            <star-rating @rating-selected="setRating" v-bind:show-rating="false" v-bind:star-size="30" class="spacing-start"></star-rating>
                             <b-form-group
                                 id="comment-text"
                             >
-                                <b-form-textarea
+                                <b-form-textarea class="overflow"
                                 id="comment-textarea"
                                 v-model="$v.form.text.$model"
                                 :state="validateState('text')"
@@ -95,7 +93,6 @@
 </template>
 
 <script>
-import Menu from "@/components/Menu/Menu.vue"
 import { validationMixin } from "vuelidate";
 import { required, minLength } from "vuelidate/lib/validators";
 import StarRating from 'vue-star-rating'
@@ -103,7 +100,6 @@ import StarRating from 'vue-star-rating'
 export default {
     components: {
         StarRating,
-        Menu
     },
     mixins: [validationMixin],
     data() {
@@ -304,7 +300,15 @@ export default {
     .spacing-top {
         margin-top: 5px;
     }
-    .row-size {
-        width: 400px;
+    .spacing-start {
+        margin-bottom:4%;
+    }
+    .overflow {
+        overflow-y:auto !important
+    }
+    .start-comment {
+        display:block;
+        margin-top: -3%;
+        margin-bottom: 7%;
     }
 </style>

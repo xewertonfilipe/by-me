@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-form @submit.stop.prevent="register" v-if="show">
+    <b-form @submit.stop.prevent="register">
       <b-form-group
         id="account-email"
       >
@@ -11,6 +11,7 @@
           type="email"
           placeholder="E-mail"
           aria-describedby="required-email"
+          autocomplete="off"
         ></b-form-input>
 
         <b-form-invalid-feedback id="required-email">Obrigatório.</b-form-invalid-feedback>
@@ -49,10 +50,9 @@ import { required, minLength } from "vuelidate/lib/validators";
     data() {
       return {
         form: {
-          email : "",
-          password : "",
+          email: "",
+          password: "",
         },
-        show: true
       }
     },
     validations: {
@@ -67,11 +67,8 @@ import { required, minLength } from "vuelidate/lib/validators";
       }
     },
     methods: {
-      validateState(value) {
-        const {$dirty, $error} = this.$v.form[value];
-        return $dirty ? !$error: null;
-      },
       register() {
+        this.formValidate();
         let data = {
           email: this.$v.form.email.$model,
           password: this.$v.form.password.$model,
@@ -79,11 +76,16 @@ import { required, minLength } from "vuelidate/lib/validators";
         this.$store.dispatch('register', data)
        .then(() => this.$router.push('/'))
        .catch(err => console.log(err));
-        
-        this.$v.form.$touch();
-        if (this.$v.form.$anyError) {
-          return;
-        }
+      },
+      validateState(value) {
+            const {$dirty, $error} = this.$v.form[value];
+            return $dirty ? !$error: null;
+      },
+      formValidate() {
+          this.$v.form.$touch();
+          if(this.$v.form.$anyError) {
+              return;
+          }
       },
     }
   }

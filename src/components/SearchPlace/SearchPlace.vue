@@ -23,53 +23,49 @@
             </b-form>
             </b-col>
         </b-row>
-    
-        <b-list-group v-for="(local, index) in places" :key="index">
+        <b-list-group v-for="(local, index) in allInfo.places" :key="index">
             <b-list-group-item>
                 <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">{{local.name}}</h5>
-                        <small>
-                            <star-rating v-bind:max-rating="1" v-bind:show-rating="false" v-bind:star-size="30"></star-rating>
-                        </small>
+                    <h5>{{local.name}}</h5>
+                     <small v-for="(favorite, index) in allInfo.allComments" :key="index">
+                         <div v-if="favorite.placeId == local.place_id">
+                             <star-rating v-bind:rating="favorite.favorite" v-bind:max-rating="1" v-bind:show-rating="false" v-bind:star-size="30" clearable></star-rating>
+                         </div>
+                        
+                     </small>
                 </div>
-                <p class="mb-1">
-                    {{local.vicinity}}
-                </p>
+                <div>{{local.vicinity}}</div>
                 <div>
-                    <b-button v-on:click="showModal(local.place_id), newListComments()" variant="info" class="btn-comments" id="show-btn">Comentários</b-button>
-                    <b-button v-on:click="showModal(local.place_id+1)" variant="success"  id="show-btn-rate" >Avaliar</b-button>
-
-                    <b-modal :ref="local.place_id" hide-footer class="overflow">
+                    <b-button v-on:click="showModal(index), newListComments()" variant="info" class="btn-comments" id="show-btn">Comentários</b-button>
+                    <b-button v-on:click="showModal(index+'id')" variant="success"  id="show-btn-rate" >Avaliar</b-button>
+                    <b-modal :ref="index" hide-footer class="overflow">
                         <template #modal-title>
                             {{local.name}}
                         </template>
-                            <b-card-group v-for="(comment, index) in allComments" :key="index" class="d-block text-center" deck style="max-height: 20rem;"> 
-                                <div v-if="comment.id == local.place_id">
-                                    <b-card v-for="(info, index) in comment.info" :key="index" header="User comment" class="text-center spacing-top">
-                                        <star-rating read-only v-model="info.rating" v-bind:show-rating="false" v-bind:star-size="25" class="start-comment"></star-rating>
-                                    <b-card-text class="message">{{info.message}}</b-card-text>
-                                </b-card>
+                            <b-card-group v-for="(comment, index) in allInfo.allComments" :key="index" class="d-block text-center" deck style="max-height: 20rem;"> 
+                                <div v-if="comment.placeId == local.place_id">
+                                    <b-card header="User comment" class="text-center spacing-top">
+                                        <star-rating read-only v-model="comment.rating" v-bind:show-rating="false" v-bind:star-size="25" class="start-comment"></star-rating>
+                                        <b-card-text class="message">{{comment.message}}</b-card-text>
+                                    </b-card>
                                 </div>
                             </b-card-group>
                     </b-modal>
-
-                    <b-modal :ref="local.place_id+1" hide-footer @hidden="clearValue">
+                    <b-modal :ref="index+'id'" hide-footer @hidden="clearValue">
                         <template #modal-title>
                             {{local.name}}
                         </template>
-                        <b-form @submit.stop.prevent="addComments(local.place_id)">
+                        <b-form @submit.stop.prevent="addComments(index, local.placeId)">
                             <star-rating @rating-selected="setRating" v-bind:show-rating="false" v-bind:star-size="30" class="spacing-start"></star-rating>
-                            <b-form-group
-                                id="comment-text"
-                            >
+                            <b-form-group id="comment-text">
                                 <b-form-textarea class="overflow"
-                                id="comment-textarea"
-                                v-model="$v.form.text.$model"
-                                :state="validateState('text')"
-                                placeholder="Comentário..."
-                                rows="1"
-                                max-rows="3"
-                                aria-describedby="required-textarea"
+                                    id="comment-textarea"
+                                    v-model="$v.form.text.$model"
+                                    :state="validateState('text')"
+                                    placeholder="Comentário..."
+                                    rows="1"
+                                    max-rows="3"
+                                    aria-describedby="required-textarea"
                                 ></b-form-textarea>
 
                                 <b-form-invalid-feedback id="required-textarea">Obrigatório.</b-form-invalid-feedback>
@@ -83,7 +79,6 @@
                                     >Comentar</b-button>
                                 </div>
                             </b-form-group>
-                            
                         </b-form>                       
                     </b-modal>
                 </div>
@@ -113,60 +108,57 @@ export default {
                 rating: 0,
                 searchFor: ""
             },
+            key: "AIzaSyDJVZPOwzIn--aX6FRwqTB_V_L1O6Skb-Q",
             favorite: false,
             radius: 5000,
+            allInfo: [],
             places: [],
-            favoritesUsers: [],
-            allFavorites: [],
             newsFavorites: [],
+            allFavorites: [],
+            favorites: [],
             newsComments: [],
             allComments: [],
             comments: [{
-                id: "ChIJUwgu86sZqwcRCzsc964cW84",
-                info: [{
-                        user: [{
-                            id: 1,
-                            Name: '',
-                            email: '',
-                            logged: true,
-                        }],
-                        message: "Ok.",
-                        rating: 3,
-                        favorite: 1
-                    },{
-                        user: [{
-                            id: 2,
-                            Name: '',
-                            email: '',
-                            logged: true,
-                        }],
-                        message: "Nice",
-                        rating: 5,
-                        favorite: 0
-                    }]
-            },{
-                id: "ChIJj02Y0UwZqwcRxzV2ecjz5Ac",
-                info: [{
-                        user: [{
-                            id: 3,
-                            Name: '',
-                            email: '',
-                            logged: true,
-                        }],
-                        message: "Its god.",
-                        rating: 4,
-                        favorite: 0
-                    }]
-            },{
-                id: "ChIJd_G937sZqwcRQUpWEOCJPF8",
-                info: [{
-                        user: [],
-                        message: "Its great.",
-                        rating: 4,
-                        favorite: 1
-                    }]
+                    id: 1,
+                    userId: 1,
+                    Name: "",
+                    email: "",
+                    message: "Ok.",
+                    rating: 3,
+                    placeId: "ChIJUwgu86sZqwcRCzsc964cW84",
+                    favorite: 1,
+                    date: "2021-02-02 11:50:30"
+                },{
+                    id: 2,
+                    userId: 3,
+                    Name: "",
+                    email: "",
+                    message: "Nice",
+                    rating: 5,
+                    placeId: "ChIJUwgu86sZqwcRCzsc964cW84",
+                    favorite: 0,
+                    date: "2021-02-04 11:50:30"
+                },{
+                    id: 2,
+                    userId: 4,
+                    Name: "",
+                    email: "",
+                    message: "Its god",
+                    rating: 5,
+                    placeId: "ChIJUwgu86sZqwcRCzsc964cW84",
+                    favorite: 0,
+                    date: "2021-02-05 11:50:30"
+                },{
+                    id: 2,
+                    userId: 4,
+                    Name: "",
+                    email: "",
+                    message: "Its great!",
+                    rating: 5,
+                    placeId: "ChIJUwgu86sZqwcRCzsc964cW84",
+                    favorite: 0,
+                    date: "2021-02-07 11:50:30"
             }],
-            key: "AIzaSyDJVZPOwzIn--aX6FRwqTB_V_L1O6Skb-Q"
         }
     },
     validations: {
@@ -213,48 +205,50 @@ export default {
                 .then(response => {
                     console.log("Result", response.data.results);
                     this.places = response.data.results;
+                    this.allData();
                 })
                 .catch(error => {
                     console.log("find", error.message);
                 })
                 console.log("Refs", this.$refs);
-                this.listFavorites();
-
+                // this.favoriteList();
                 this.$v.form.$touch();
                 if (this.$v.form.$anyError) {
                     return;
                 }
+                
         },
         isEmpty(value) {
             if(value.trim() == "")
                 return true;
         },
-        listPlaceUser() {
-            //Param: userLogged
-            
-
+        allData() {
+            this.allInfo = {
+                allComments: [...this.comments, ...this.newsComments],
+                places: this.places,
+                newsFavorites: this.newsFavorites
+            } 
+            console.log("allInfo", this.allInfo);
         },
-        listFavorites() {
-            return this.comments.map((comment) => {
-                return comment.info.map((info) => {
-                    return info.favorite;
-                });
-            })
+        setfavorite(value, placeId, user) {
+            this.newsFavorites.push({user: user, placeId: placeId, favorite: value});
         },
-        addComments(place_id) {
+        addComments(index, place_id) {
             if(this.validateForm()) {
                 return;
             }
             this.newsComments.push({
-                id: place_id,
-                info: [{
-                        user: {},
-                        message: this.$v.form.text.$model,
-                        rating: this.getRating()
-                    }]
+                userId: 20,
+                Name: "",  //user logged
+                email: "",
+                message: this.$v.form.text.$model,
+                rating: this.getRating(),
+                placeId: place_id,
+                favorite: null,
+                date: new Date()
             });
             this.clearValue();
-            this.hideModal(place_id+1);
+            this.hideModal(index+'id');
         },
         setRating(rating) {
             this.form.rating = rating;
@@ -265,12 +259,6 @@ export default {
         toggleFavorite() {
 
         },
-        setfavorite(value) {
-            this.favorite = value;
-        },
-        getFvorite() {
-            return this.favorite;
-        },
         validateForm() {
             this.$v.form.$touch();
             if(this.$v.form.$anyError) {
@@ -279,15 +267,16 @@ export default {
         },
         newListComments() {
             this.allComments = [...this.comments, ...this.newsComments];
+            console.log("AllComments", this.allComments);
         },
         clearValue() {
             this.$v.form.text.$model = "";
         },
-        showModal(place_id) {
-            this.$refs[place_id][0].show();
+        showModal(index) {
+            this.$refs[index][0].show();
         },
-        hideModal(place_id) {
-            this.$refs[place_id][0].hide()
+        hideModal(index) {
+            this.$refs[index][0].hide()
         },
     },
 }
@@ -306,9 +295,9 @@ export default {
     .overflow {
         overflow-y:auto !important
     }
-    .start-comment {
-        display:block;
-        margin-top: -3%;
+    .vue-star-rating {
+        display:block !important;
+        margin-top: -2%;
         margin-bottom: 7%;
     }
 </style>

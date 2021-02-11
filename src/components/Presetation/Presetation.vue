@@ -1,10 +1,10 @@
 <template>
 <div>
-    <b-container fluid class="flex gradient">
-        <div class="profile"><Profile /></div>
-        <div class="logout"><Logout /></div>
+    <b-container fluid class="flex-presetation gradient">
+        <div><Profile /></div>
+        <div><Logout /></div>
     </b-container>
-     <b-container class="teste">
+     <b-container class="search">
          <div>
              <SearchPlace />
         </div>
@@ -33,11 +33,12 @@ export default {
         text-align:center;
         background-image: linear-gradient(to bottom, red, yellow 130%);
     }
-    .flex{
+    .flex-presetation{
         display:flex;
         justify-content:space-around;
+        height:160px;
     }
-    .teste {
+    .search {
         background:#fff;
         position:relative;
         margin-top:-1.5%;

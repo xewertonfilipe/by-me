@@ -6,11 +6,11 @@
 
 <script>
 
-import FormLogin from '@/components/Form/FormLogin/FormLogin'
+import FormLogin from "@/components/Form/FormLogin/FormLogin";
 
 export default {
     components: {
-        FormLogin
+        FormLogin,
     }
 }
 </script>

@@ -85,9 +85,15 @@ export default {
             const dataUser = {
                 id: 2,
             }
-            this.$store.dispatch('getProfile', dataUser)
-            .then((res) => this.setUser(res))
-            .catch(err => console.log("Erro getUser", err));
+            return new Promise(() => {
+                this.$store.dispatch('getProfile', dataUser)
+                .then((res) => {
+                    this.setUser(res)
+                })
+                .catch(() => {
+                    this.toastError("danger");
+                })
+            })
         },
         updateUser() {
             this.ValidateTouch();
@@ -96,9 +102,16 @@ export default {
             }
             this.disableForm();
             const data = this.user;
-            this.$store.dispatch('update', data)
-            .then(() => this.hideModal())
-            .catch(err => console.log("Erro Update", err))
+            return new Promise(() => {
+                this.$store.dispatch('update', data)
+                .then(() => {
+                    this.toastSuccess("success");
+                    this.hideModal();
+                })
+                .catch(() => {
+                this.toastError("danger");
+                })
+            })
         },
         setUser(data) {
             this.user.first_name = data.data.data.first_name;
@@ -141,7 +154,21 @@ export default {
             if(this.form.first_name.trim() === "" || this.form.email.trim() === ""){
                 return true;
             }
-        }
+        },
+        toastSuccess(variant) {
+            this.$bvToast.toast('Edição realizada com sucesso!', {
+                title: `Sucesso`,
+                variant: variant,
+                solid: true
+            })
+        },
+        toastError(variant = null) {
+            this.$bvToast.toast('Erro ao editar!', {
+                title: `Erro`,
+                variant: variant,
+                solid: true
+            })
+        },
     },
 }
 </script>

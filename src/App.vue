@@ -1,10 +1,15 @@
 <template>
   <div id="app">
+    <Offline />
     <router-view />
   </div>
 </template>
 <script>
+import Offline from "@/components/Offline/Offline";
 export default {
+  components: {
+    Offline
+  },
   created() {
     this.$axios.interceptors.response.use(undefined, function (err) {
       return new Promise(() => {
@@ -18,16 +23,4 @@ export default {
 }
 </script>
 <style>
-body, html {
-  padding: 0;
-  margin: 0;
-  width: 100%;
-  min-height: 100vh;
-}
-body {
-  background: #F81E1D;
-    background: -webkit-linear-gradient(bottom right, #F81E1D, #F9DC12);
-    background: -moz-linear-gradient(bottom right, #F81E1D, #F9DC12);
-    background: linear-gradient(to top left, #F81E1D, #F9DC12);
-}
 </style>

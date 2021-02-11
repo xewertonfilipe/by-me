@@ -8,12 +8,13 @@
                         <b-input-group-prepend>
                             <b-button variant="outline-info" type="submit">Buscar</b-button>
                         </b-input-group-prepend>
-                        <b-form-input
+                        <b-form-input class="text-center"
                             id="input-search-place"
                             v-model="$v.form.searchFor.$model"
                             :state="validateState('searchFor')"
                             type="text"
                             aria-describedby="required-searchFor"
+                            autocomplete="off"
                         ></b-form-input>
                         <b-input-group-append>
                             <b-button variant="outline-secondary" v-on:click.prevent="locate">Permitir localização</b-button>
@@ -23,26 +24,29 @@
             </b-form>
             </b-col>
         </b-row>
+        <b-card v-show="show">
+            <b-skeleton animation="wave" width="85%"></b-skeleton>
+            <b-skeleton animation="wave" width="55%"></b-skeleton>
+            <b-skeleton animation="wave" width="70%"></b-skeleton>
+        </b-card>
         <b-list-group v-for="(local, index) in allInfo.places" :key="index">
             <b-list-group-item>
                 <div class="d-flex w-100 justify-content-between">
                     <h5>{{local.name}}</h5>
-                     <small v-for="(favorite, index) in allInfo.allComments" :key="index">
-                         <div v-if="favorite.placeId == local.place_id">
-                             <star-rating v-bind:rating="favorite.favorite" v-bind:max-rating="1" v-bind:show-rating="false" v-bind:star-size="30" clearable></star-rating>
+                     <small>
+                         <div>
+                             <star-rating @rating-selected="setfavorite(local.place_id, user)" v-bind:rating="0" v-bind:max-rating="1" v-bind:show-rating="false" v-bind:star-size="30" clearable></star-rating>
                          </div>
-                        
                      </small>
                 </div>
                 <div>{{local.vicinity}}</div>
                 <div>
-                    <b-button v-on:click="showModal(index), newListComments()" variant="info" class="btn-comments" id="show-btn">Comentários</b-button>
+                    <b-button v-on:click="showModal(index), allData()" variant="info" class="btn-comments" id="show-btn">Comentários</b-button>
                     <b-button v-on:click="showModal(index+'id')" variant="success"  id="show-btn-rate" >Avaliar</b-button>
                     <b-modal :ref="index" hide-footer class="overflow">
                         <template #modal-title>
-                            {{local.name}}
                         </template>
-                            <b-card-group v-for="(comment, index) in allInfo.allComments" :key="index" class="d-block text-center" deck style="max-height: 20rem;"> 
+                            <b-card-group v-for="(comment, index) in allInfo.allComments" :key="index" class="d-block text-center" deck style="max-height: 20rem;">
                                 <div v-if="comment.placeId == local.place_id">
                                     <b-card header="User comment" class="text-center spacing-top">
                                         <star-rating read-only v-model="comment.rating" v-bind:show-rating="false" v-bind:star-size="25" class="start-comment"></star-rating>
@@ -55,7 +59,7 @@
                         <template #modal-title>
                             {{local.name}}
                         </template>
-                        <b-form @submit.stop.prevent="addComments(index, local.placeId)">
+                        <b-form @submit.stop.prevent="addComments(index, local.place_id)">
                             <star-rating @rating-selected="setRating" v-bind:show-rating="false" v-bind:star-size="30" class="spacing-start"></star-rating>
                             <b-form-group id="comment-text">
                                 <b-form-textarea class="overflow"
@@ -70,12 +74,11 @@
 
                                 <b-form-invalid-feedback id="required-textarea">Obrigatório.</b-form-invalid-feedback>
 
-                                <div class="spacing-top">
+                                <div class="spacing-top btn-color">
                                     <b-button 
                                         type="submit"
                                         block
                                         squared
-                                        variant="outline-primary"
                                     >Comentar</b-button>
                                 </div>
                             </b-form-group>
@@ -103,6 +106,7 @@ export default {
                 lat: 0,
                 lng: 0
             },
+            show: false,
             form: {
                 text: "",
                 rating: 0,
@@ -175,10 +179,10 @@ export default {
     },
     created() {
         this.$getLocation({})
-            .then(coordinates => {
-                this.coordinates = coordinates;
-            })
-            .catch(error => console.error("windowsLocation ", error));
+        .then(coordinates => {
+            this.coordinates = coordinates;
+        })
+        .catch(error => console.error("windowsLocation ", error));
     },
     methods: {
         validateState(value) {
@@ -197,26 +201,31 @@ export default {
                 this.validateForm();
                 return
             }
+            this.skeletonOn();
+            this.clearPlaces();
             //For Cors add https://cors-anywhere.herokuapp.com/
             const URL = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.coordinates.lat},${this.coordinates.lng}&keyword=${this.form.searchFor}&radius=${this.radius}&key=${this.key}`;
-            
-            this.$axios
-                .get(URL)
+
+            return new Promise(() => {
+                this.$axios.get(URL)
                 .then(response => {
-                    console.log("Result", response.data.results);
                     this.places = response.data.results;
                     this.allData();
+                    this.skeletonOff();
                 })
-                .catch(error => {
-                    console.log("find", error.message);
+                .catch(() => {
+                    this.toastError("danger")
                 })
-                console.log("Refs", this.$refs);
-                // this.favoriteList();
-                this.$v.form.$touch();
-                if (this.$v.form.$anyError) {
-                    return;
-                }
-                
+            })
+        },
+        clearPlaces() {
+            this.allInfo.places = "";
+        },
+        skeletonOn() {
+            this.show = true;
+        },
+        skeletonOff() {
+            this.show = false;
         },
         isEmpty(value) {
             if(value.trim() == "")
@@ -228,10 +237,10 @@ export default {
                 places: this.places,
                 newsFavorites: this.newsFavorites
             } 
-            console.log("allInfo", this.allInfo);
         },
-        setfavorite(value, placeId, user) {
-            this.newsFavorites.push({user: user, placeId: placeId, favorite: value});
+        setfavorite(placeId, user) {
+            this.newsFavorites.push({user: user, placeId: placeId, favorite: 1});
+            this.toastFavorito();
         },
         addComments(index, place_id) {
             if(this.validateForm()) {
@@ -256,18 +265,11 @@ export default {
         getRating() {
             return this.form.rating;
         },
-        toggleFavorite() {
-
-        },
         validateForm() {
             this.$v.form.$touch();
             if(this.$v.form.$anyError) {
                 return true;
             }
-        },
-        newListComments() {
-            this.allComments = [...this.comments, ...this.newsComments];
-            console.log("AllComments", this.allComments);
         },
         clearValue() {
             this.$v.form.text.$model = "";
@@ -278,6 +280,20 @@ export default {
         hideModal(index) {
             this.$refs[index][0].hide()
         },
+        toastFavorito(variant) {
+            this.$bvToast.toast('Adicionado!', {
+                title: `Favorito`,
+                variant: variant,
+                solid: true
+            })
+        },
+        toastError(variant) {
+            this.$bvToast.toast('Erro ao buscar!', {
+                title: `Erro`,
+                variant: variant,
+                solid: true
+            })
+        },
     },
 }
 </script>
@@ -285,6 +301,7 @@ export default {
 <style>
     .btn-comments {
         margin-right: 5px;
+        background-color:rgb(41, 105, 131) !important;
     }
     .spacing-top {
         margin-top: 5px;
@@ -300,4 +317,7 @@ export default {
         margin-top: -2%;
         margin-bottom: 7%;
     }
+    .btn-color {
+    background-color: #ff8c00 !important;
+  }
 </style>

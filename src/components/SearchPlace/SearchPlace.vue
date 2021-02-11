@@ -204,7 +204,7 @@ export default {
             this.skeletonOn();
             this.clearPlaces();
             //For Cors add https://cors-anywhere.herokuapp.com/
-            const URL = `https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.coordinates.lat},${this.coordinates.lng}&keyword=${this.form.searchFor}&radius=${this.radius}&key=${this.key}`;
+            const URL = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.coordinates.lat},${this.coordinates.lng}&keyword=${this.form.searchFor}&radius=${this.radius}&key=${this.key}`;
 
             return new Promise(() => {
                 this.$axios.get(URL)

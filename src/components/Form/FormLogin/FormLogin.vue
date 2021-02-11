@@ -1,6 +1,6 @@
 <template>
     <b-container class="flex-login">
-      <b-form @submit.stop.prevent="login" v-if="show" class="form-login">
+      <b-form @submit.stop.prevent="login" class="form-login">
         <b-form-group id="login-email">
           <b-form-input class="text-center"
             id="input-login-email"
@@ -26,7 +26,7 @@
         </b-form-group>
         <b-button v-bind:disabled="submitActive" block type="submit" class="btn-space">Entrar</b-button>
         <router-link to="/cadastro">
-          <b-button block variant="success">Criar Conta</b-button>
+          <b-button block class="btn-color">Criar Conta</b-button>
         </router-link>
       </b-form>
     </b-container>
@@ -45,7 +45,6 @@ import { required, minLength } from "vuelidate/lib/validators";
           email: "",
           pass: "",
         },
-        show: true
       }
     },
     validations: {
@@ -112,14 +111,14 @@ import { required, minLength } from "vuelidate/lib/validators";
           this.enableSubmit();
         },1000);
       },
-      toastError(variant = null) {
+      toastError(variant) {
         this.$bvToast.toast('Erro ao efetuar login!', {
           title: `Erro`,
           variant: variant,
           solid: true
         })
         this.enableSubmit();
-      }
+      },
     },
   }
 </script>
@@ -133,10 +132,21 @@ import { required, minLength } from "vuelidate/lib/validators";
     align-items: center;
   }
   .form-login {
-    width: 30%;
+    min-width: 35%;
     height: 20%;
+  }
+  .btn-color {
+    background-color: #ff8c00 !important;
   }
   .btn-space {
     margin-bottom: 5px;
+  }
+  body {
+    background-image: url("../../../assets/bg.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-color: #464646;
   }
 </style>

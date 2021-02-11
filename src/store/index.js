@@ -93,7 +93,6 @@ const store = new Vuex.Store({
           .then((resp) => {
             const name = resp.data.first_name;
             const email = resp.data.email;
-            console.log("resp", resp);
             commit("auth_update", name, email);
             resolve(resp);
           })
@@ -134,6 +133,7 @@ const store = new Vuex.Store({
   getters: {
     isLoggedIn: (state) => !!state.token,
     authStatus: (state) => state.status,
+    user: (state) => state.user,
   },
 });
 

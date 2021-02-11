@@ -24,7 +24,7 @@
         ></b-form-input>
         <b-form-invalid-feedback id="required-password">Obrigatório.</b-form-invalid-feedback>
       </b-form-group>
-      <b-button v-bind:disabled="submitActive" block type="submit" variant="success" class="btn-space-account">Criar Conta</b-button>
+      <b-button v-bind:disabled="submitActive" block type="submit" class="btn-space-account btn-color">Cadastrar</b-button>
        <router-link to="/">
         <b-button block >Voltar</b-button>
       </router-link>
@@ -61,14 +61,12 @@ import { required, minLength } from "vuelidate/lib/validators";
     methods: {
       register() {
         this.formValidate();
-        if(this.isFormEmpty()) {
-          return;
-        }
         this.disableSubmit();
         let data = {
           email: this.$v.form.email.$model,
           password: this.$v.form.password.$model,
         }
+        
         return new Promise(() => {
           this.$store.dispatch('register', data)
           .then(() => {
@@ -80,18 +78,13 @@ import { required, minLength } from "vuelidate/lib/validators";
         })
       },
       validateState(value) {
-          const {$dirty, $error} = this.$v.form[value];
-          return $dirty ? !$error: null;
+            const {$dirty, $error} = this.$v.form[value];
+            return $dirty ? !$error: null;
       },
       formValidate() {
           this.$v.form.$touch();
           if(this.$v.form.$anyError) {
               return;
-          }
-      },
-      isFormEmpty() {
-          if(this.form.email.trim() === "" || this.form.pass.trim() === "") {
-              return true;
           }
       },
       enableSubmit() {
@@ -111,7 +104,7 @@ import { required, minLength } from "vuelidate/lib/validators";
           this.enableSubmit();
         },1000);
       },
-      toastError(variant = null) {
+      toastError(variant) {
         this.$bvToast.toast('Erro ao cadastrar!', {
           title: `Erro`,
           variant: variant,
@@ -134,6 +127,9 @@ import { required, minLength } from "vuelidate/lib/validators";
   .form-account {
     width: 30%;
     height: 20%;
+  }
+  .btn-color {
+    background-color: #ff8c00 !important;
   }
   .btn-space-account {
     margin-bottom: 5px;

@@ -2,7 +2,7 @@
 <div>
     <div @click="showModal" class="pointer">
         <b-avatar icon="people-fill" size="3rem"></b-avatar>
-        <span v-text="form.first_name"></span>
+        <span v-text="user.first_name" class="info_user"></span>
     </div>
     <b-modal ref="my-modal" hide-footer @hide="loadData">
         <template #modal-title>
@@ -33,8 +33,14 @@
                 ></b-form-input>
                 <b-form-invalid-feedback id="required-email">Obrigatório.</b-form-invalid-feedback>
             </b-form-group>
-            <b-icon v-on:click="enableForm" icon="pencil-square" font-scale="2"></b-icon>
-            <b-button v-bind:disabled="submitActive" type="submit" variant="success">Salvar</b-button>
+            <div class="flex-profile">
+                <div>
+                    <b-icon v-on:click="enableForm" icon="pencil-square" font-scale="2"></b-icon>
+                </div>
+                <div>
+                    <b-button v-bind:disabled="submitActive" type="submit" variant="success">Salvar</b-button>
+                </div>
+            </div>
         </b-form>
     </b-modal>
 </div>
@@ -49,6 +55,10 @@ export default {
       return {
         inputActive: true,
         submitActive: true,
+        user: {
+            first_name: "",
+            email: ""
+        },
         form: {
           first_name: "",
           email: "",
@@ -91,6 +101,8 @@ export default {
             .catch(err => console.log("Erro Update", err))
         },
         setUser(data) {
+            this.user.first_name = data.data.data.first_name;
+            this.user.email = data.data.data.email;
             this.form.first_name = data.data.data.first_name;
             this.form.email = data.data.data.email;
         },
@@ -136,5 +148,13 @@ export default {
 <style >
     .pointer {
         cursor: pointer;
+    }
+    .info_user {
+        display:inline-block;
+        margin-left:10px;
+    }
+    .flex-profile {
+        display:flex;
+        justify-content:space-between;
     }
 </style>

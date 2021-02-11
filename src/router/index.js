@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Router from "vue-router";
 import store from "@/store/index.js";
-import Menu from "@/components/Menu/Menu";
+import Presetation from "@/components/Presetation/Presetation";
 import Login from "@/components/Login/Login";
 import Register from "@/components/Register/Register";
 
@@ -23,7 +23,7 @@ let router = new Router({
     {
       path: "/app",
       name: "app",
-      component: Menu,
+      component: Presetation,
       meta: {
         requiresAuth: true,
       },

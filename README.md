@@ -1,9 +1,11 @@
 # by-me
 
-## Project setup
+## Add extension
 
-Add extension: Allow CORS: Access-Control-Allow-Origin.
+```
+Allow CORS: Access-Control-Allow-Origin.
 Chrome: https://chrome.google.com/webstore/detail/allow-cors-access-control/lhobafahddgcelffkeicbaginigeejlf
+```
 
 ## Project setup
 

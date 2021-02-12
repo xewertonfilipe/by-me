@@ -1,4 +1,11 @@
-# by-me
+# By-me on Heroku
+
+```
+https://by-me.herokuapp.com/
+
+User: eve.holt@reqres.in
+Pass: cityslicka
+```
 
 ## Add extension
 

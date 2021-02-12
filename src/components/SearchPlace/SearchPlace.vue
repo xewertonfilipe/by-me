@@ -1,27 +1,29 @@
 <template>
-    <b-container class="search-place">
+    <b-container class="container-search-place">
         <b-row>
             <b-col>
-                <b-form @submit.stop.prevent="findPlaces">
-                <b-form-group id="search-place">
-                    <b-input-group>
-                        <b-input-group-prepend>
-                            <b-button variant="outline-secondary" v-on:click.prevent="locate">Permitir localização</b-button>
-                        </b-input-group-prepend>
-                        <b-form-input class="text-center"
-                            id="input-search-place"
-                            v-model="$v.form.searchFor.$model"
-                            :state="validateState('searchFor')"
-                            type="text"
-                            aria-describedby="required-searchFor"
-                            autocomplete="off"
-                        ></b-form-input>
-                        <b-input-group-append>
-                            <b-button variant="outline-info" type="submit">Buscar</b-button>
-                        </b-input-group-append>
-                    </b-input-group>
-                </b-form-group>
-            </b-form>
+                <b-form @submit.stop.prevent="findPlaces" class="form-search-place">
+                    <b-form-group id="search-place">
+                        <b-input-group>
+                            <b-input-group-prepend>
+                                <b-button variant="outline-secondary" v-on:click.prevent="locate">Permitir localização</b-button>
+                            </b-input-group-prepend>
+                            <b-form-input class="text-center"
+                                id="input-search-place"
+                                v-model="$v.form.searchFor.$model"
+                                :state="validateState('searchFor')"
+                                type="text"
+                                aria-describedby="required-searchFor"
+                                autocomplete="off"
+                            ></b-form-input>
+                            <b-input-group-append>
+                                <b-button v-bind:disabled="show" type="submit">Buscar
+                                <b-spinner v-show="show" label="Loading..."></b-spinner>
+                            </b-button>
+                            </b-input-group-append>
+                        </b-input-group>
+                    </b-form-group>
+                </b-form>
             </b-col>
         </b-row>
         <b-card v-show="show">
@@ -201,7 +203,7 @@ export default {
                 this.validateForm();
                 return
             }
-            this.skeletonOn();
+            this.showLoad();
             this.clearPlaces();
             //For Cors add https://cors-anywhere.herokuapp.com/
             const URL = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.coordinates.lat},${this.coordinates.lng}&keyword=${this.form.searchFor}&radius=${this.radius}&key=${this.key}`;
@@ -211,7 +213,7 @@ export default {
                 .then(response => {
                     this.places = response.data.results;
                     this.allData();
-                    this.skeletonOff();
+                    this.hidenLoad();
                 })
                 .catch(() => {
                     this.toastError("danger")
@@ -221,10 +223,10 @@ export default {
         clearPlaces() {
             this.allInfo.places = "";
         },
-        skeletonOn() {
+        showLoad() {
             this.show = true;
         },
-        skeletonOff() {
+        hidenLoad() {
             this.show = false;
         },
         isEmpty(value) {
@@ -299,7 +301,7 @@ export default {
 </script>
 
 <style lang="scss"> 
-    .search-place {
+    .container-search-place {
         background:#fff;
         position:relative;
         margin-top:-1.5%;
@@ -310,70 +312,76 @@ export default {
                 0 10px 10px rgba(0, 0, 0, .2);
         background: linear-gradient(to bottom, #efefef, #ccc);
         transition: all 0.5s ease-in-out;
+
+            .form-search-place {
+                b-input-group {
+                    width: 50%;
+                }
+            }
     
-        .list-group {
-            border: #000 1px solid;
-            margin: 2%;
+            .list-group {
+                border: #000 1px solid;
+                margin: 2%;
+            }
+            .spinner-border {
+                width: 1rem !important;
+                height: 1rem !important;
+                position: absolute;
+                margin-left: -28px;
+                margin-top: 5px;
+            }
+            .btn-comments {
+                border: 1px solid #00e1ff !important;
+                background-color: #0e7a9b !important;
+                font-size: 1rem !important;
+                font-weight: bold !important;
+                padding: 5px 15px !important;
+                letter-spacing: 1px !important;
+                cursor: pointer;
+                transition: transform .1s ease-in;
+                margin: 20px 5px 0px 0px;
+                &:active {
+                    transform: scale(.9);
+                }
+
+                &:focus {
+                    outline: none;
+                }
+            }
+            .btn-rate {
+                border: 1px solid #057a05 !important;
+                background-color: #057a05 !important;
+                font-size: 1rem !important;
+                font-weight: bold !important;
+                padding: 5px 15px !important;
+                letter-spacing: 1px !important;
+                cursor: pointer;
+                transition: transform .1s ease-in;
+                margin: 20px 5px 0px 0px;
+                &:active {
+                    transform: scale(.9);
+                }
+
+                &:focus {
+                    outline: none;
+                }
+            }
+            .spacing-top {
+                margin-top: 5px;
+            }
+            .spacing-start {
+                margin-bottom:4%;
+            }
+            .overflow {
+                overflow-y:auto !important
+            }
+            .vue-star-rating {
+                display:block !important;
+                margin-top: -2%;
+                margin-bottom: 7%;
+            }
+            .btn-color {
+            background-color: #ff8c00 !important;
         }
     }
-
-    .btn-comments {
-        border: 1px solid #00e1ff !important;
-        background-color: #0e7a9b !important;
-        font-size: 1rem !important;
-        font-weight: bold !important;
-        padding: 5px 15px !important;
-        letter-spacing: 1px !important;
-        cursor: pointer;
-        transition: transform .1s ease-in;
-        margin: 20px 5px 0px 0px;
-        &:active {
-            transform: scale(.9);
-        }
-
-        &:focus {
-            outline: none;
-        }
-    }
-
-    .btn-rate {
-        border: 1px solid #057a05 !important;
-        background-color: #057a05 !important;
-        font-size: 1rem !important;
-        font-weight: bold !important;
-        padding: 5px 15px !important;
-        letter-spacing: 1px !important;
-        cursor: pointer;
-        transition: transform .1s ease-in;
-        margin: 20px 5px 0px 0px;
-        &:active {
-            transform: scale(.9);
-        }
-
-        &:focus {
-            outline: none;
-        }
-    }
-
-    // .btn-comments {
-    //     margin-right: 5px;
-    //     background-color:rgb(41, 105, 131) !important;
-    // }
-    .spacing-top {
-        margin-top: 5px;
-    }
-    .spacing-start {
-        margin-bottom:4%;
-    }
-    .overflow {
-        overflow-y:auto !important
-    }
-    .vue-star-rating {
-        display:block !important;
-        margin-top: -2%;
-        margin-bottom: 7%;
-    }
-    .btn-color {
-    background-color: #ff8c00 !important;
-  }
 </style>

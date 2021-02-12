@@ -1,12 +1,12 @@
 <template>
-    <b-container class="place">
+    <b-container class="search-place">
         <b-row>
             <b-col>
                 <b-form @submit.stop.prevent="findPlaces">
                 <b-form-group id="search-place">
                     <b-input-group>
                         <b-input-group-prepend>
-                            <b-button variant="outline-info" type="submit">Buscar</b-button>
+                            <b-button variant="outline-secondary" v-on:click.prevent="locate">Permitir localização</b-button>
                         </b-input-group-prepend>
                         <b-form-input class="text-center"
                             id="input-search-place"
@@ -17,7 +17,7 @@
                             autocomplete="off"
                         ></b-form-input>
                         <b-input-group-append>
-                            <b-button variant="outline-secondary" v-on:click.prevent="locate">Permitir localização</b-button>
+                            <b-button variant="outline-info" type="submit">Buscar</b-button>
                         </b-input-group-append>
                     </b-input-group>
                 </b-form-group>
@@ -41,8 +41,8 @@
                 </div>
                 <div>{{local.vicinity}}</div>
                 <div>
-                    <b-button v-on:click="showModal(index), allData()" variant="info" class="btn-comments" id="show-btn">Comentários</b-button>
-                    <b-button v-on:click="showModal(index+'id')" variant="success"  id="show-btn-rate" >Avaliar</b-button>
+                    <b-button v-on:click="showModal(index), allData()" class="btn-comments" id="show-btn">Comentários</b-button>
+                    <b-button v-on:click="showModal(index+'id')" class="btn-rate" id="show-btn-rate" >Avaliar</b-button>
                     <b-modal :ref="index" hide-footer class="overflow">
                         <template #modal-title>
                         </template>
@@ -298,11 +298,67 @@ export default {
 }
 </script>
 
-<style>
-    .btn-comments {
-        margin-right: 5px;
-        background-color:rgb(41, 105, 131) !important;
+<style lang="scss"> 
+    .search-place {
+        background:#fff;
+        position:relative;
+        margin-top:-1.5%;
+        padding-top:1.5%;
+        padding-bottom:1%;
+        border-radius: 10px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, .2),
+                0 10px 10px rgba(0, 0, 0, .2);
+        background: linear-gradient(to bottom, #efefef, #ccc);
+        transition: all 0.5s ease-in-out;
+    
+        .list-group {
+            border: #000 1px solid;
+            margin: 2%;
+        }
     }
+
+    .btn-comments {
+        border: 1px solid #00e1ff !important;
+        background-color: #0e7a9b !important;
+        font-size: 1rem !important;
+        font-weight: bold !important;
+        padding: 5px 15px !important;
+        letter-spacing: 1px !important;
+        cursor: pointer;
+        transition: transform .1s ease-in;
+        margin: 20px 5px 0px 0px;
+        &:active {
+            transform: scale(.9);
+        }
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    .btn-rate {
+        border: 1px solid #057a05 !important;
+        background-color: #057a05 !important;
+        font-size: 1rem !important;
+        font-weight: bold !important;
+        padding: 5px 15px !important;
+        letter-spacing: 1px !important;
+        cursor: pointer;
+        transition: transform .1s ease-in;
+        margin: 20px 5px 0px 0px;
+        &:active {
+            transform: scale(.9);
+        }
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    // .btn-comments {
+    //     margin-right: 5px;
+    //     background-color:rgb(41, 105, 131) !important;
+    // }
     .spacing-top {
         margin-top: 5px;
     }

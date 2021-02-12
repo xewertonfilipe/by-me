@@ -38,7 +38,9 @@
                     <b-icon v-on:click="enableForm" icon="pencil-square" font-scale="2"></b-icon>
                 </div>
                 <div>
-                    <b-button v-bind:disabled="submitActive" type="submit" variant="success">Salvar</b-button>
+                   <b-button v-bind:disabled="submitActive" v-on:click="showLoad" type="submit" variant="success">Salvar
+                        <b-spinner v-show="show" label="Loading..."></b-spinner>
+                    </b-button>
                 </div>
             </div>
         </b-form>
@@ -53,6 +55,7 @@ export default {
     mixins: [validationMixin],
     data() {
       return {
+        show: false,
         inputActive: true,
         submitActive: true,
         user: {
@@ -100,6 +103,7 @@ export default {
             if(this.isFormEmpty()) {
                 return;
             }
+            this.showLoad();
             this.disableForm();
             const data = this.user;
             return new Promise(() => {
@@ -107,6 +111,7 @@ export default {
                 .then(() => {
                     this.toastSuccess("success");
                     this.hideModal();
+                    this.stopLoad();
                 })
                 .catch(() => {
                 this.toastError("danger");
@@ -119,14 +124,17 @@ export default {
             this.form.first_name = data.data.data.first_name;
             this.form.email = data.data.data.email;
         },
-        stopLoad() {
-            
-        },
         showModal() {
             this.$refs['my-modal'].show()
         },
         hideModal() {
             this.$refs['my-modal'].hide()
+        },
+        showLoad() {
+            this.show = true;
+        },
+        stopLoad() {
+            this.show = false;
         },
         enableForm() {
             this.inputActive = false;
@@ -183,5 +191,12 @@ export default {
     .flex-profile {
         display:flex;
         justify-content:space-between;
+    }
+     .spinner-border {
+        width: 1rem !important;
+        height: 1rem !important;
+        position: absolute;
+        margin-left: -28px;
+        margin-top: 5px;
     }
 </style>

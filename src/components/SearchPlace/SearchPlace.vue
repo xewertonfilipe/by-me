@@ -16,11 +16,9 @@
                                 aria-describedby="required-searchFor"
                                 autocomplete="off"
                             ></b-form-input>
-                            <b-input-group-append>
-                                <b-button v-bind:disabled="show" type="submit">Buscar
+                            <b-button v-bind:disabled="show" type="submit">Buscar
                                 <b-spinner v-show="show" label="Loading..."></b-spinner>
                             </b-button>
-                            </b-input-group-append>
                         </b-input-group>
                     </b-form-group>
                 </b-form>
@@ -37,7 +35,7 @@
                     <h5>{{local.name}}</h5>
                      <small>
                          <div>
-                             <star-rating @rating-selected="setfavorite(local.place_id, user)" v-bind:rating="0" v-bind:max-rating="1" v-bind:show-rating="false" v-bind:star-size="30" clearable></star-rating>
+                             <star-rating @rating-selected="setfavorite(local.place_id)" v-bind:rating="0" v-bind:max-rating="1" v-bind:show-rating="false" v-bind:star-size="30" clearable></star-rating>
                          </div>
                      </small>
                 </div>
@@ -115,7 +113,7 @@ export default {
                 searchFor: ""
             },
             key: "AIzaSyDJVZPOwzIn--aX6FRwqTB_V_L1O6Skb-Q",
-            favorite: false,
+            favorite: '',
             radius: 5000,
             allInfo: [],
             places: [],
@@ -213,7 +211,7 @@ export default {
                 .then(response => {
                     this.places = response.data.results;
                     this.allData();
-                    this.hidenLoad();
+                    this.stopLoad();
                 })
                 .catch(() => {
                     this.toastError("danger")
@@ -226,7 +224,7 @@ export default {
         showLoad() {
             this.show = true;
         },
-        hidenLoad() {
+        stopLoad() {
             this.show = false;
         },
         isEmpty(value) {
@@ -240,9 +238,25 @@ export default {
                 newsFavorites: this.newsFavorites
             } 
         },
-        setfavorite(placeId, user) {
-            this.newsFavorites.push({user: user, placeId: placeId, favorite: 1});
-            this.toastFavorito();
+        setfavorite(placeId) {
+            this.favorite = true;
+            // this array: user, placeId, favorite.
+            this.newsFavorites.push({user: 2, placeId: placeId, favorite: 1});
+            console.log("Favorito", this.favorite);
+            this.comandFavorite();
+        },
+        comandFavorite() {
+            if (this.getFavorite()) {
+                this.favorite = false;
+                return this.toastFavorite();
+            }
+            if (!this.getFavorite()) {
+                this.favorite = true;
+                return this.toastRemoveFavorite();
+            }
+        },
+        getFavorite() {
+            return this.favorite;
         },
         addComments(index, place_id) {
             if(this.validateForm()) {
@@ -282,8 +296,15 @@ export default {
         hideModal(index) {
             this.$refs[index][0].hide()
         },
-        toastFavorito(variant) {
+        toastFavorite(variant) {
             this.$bvToast.toast('Adicionado!', {
+                title: `Favorito`,
+                variant: variant,
+                solid: true
+            })
+        },
+        toastRemoveFavorite(variant) {
+            this.$bvToast.toast('Removido!', {
                 title: `Favorito`,
                 variant: variant,
                 solid: true

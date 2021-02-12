@@ -1,8 +1,8 @@
 <template>
-    <b-container class="flex-login">
-      <b-form @submit.stop.prevent="login" class="form-login">
+<b-container class="container">
+      <b-form @submit.stop.prevent="login">
         <b-form-group id="login-email">
-          <b-form-input class="text-center"
+          <b-form-input
             id="input-login-email"
             v-model="$v.form.email.$model"
             :state="validateState('email')"
@@ -14,7 +14,7 @@
           <b-form-invalid-feedback id="required-email">Obrigatório.</b-form-invalid-feedback>
         </b-form-group>
         <b-form-group id="login-pass">
-          <b-form-input class="text-center"
+          <b-form-input
             id="input-login-pass"
             v-model="$v.form.pass.$model"
             :state="validateState('pass')"
@@ -24,10 +24,13 @@
           ></b-form-input>
           <b-form-invalid-feedback id="required-pass">Obrigatório.</b-form-invalid-feedback>
         </b-form-group>
-        <b-button v-bind:disabled="submitActive" block type="submit" class="btn-space">Entrar</b-button>
-        <router-link to="/cadastro">
-          <b-button block class="btn-color">Criar Conta</b-button>
-        </router-link>
+        <b-button v-bind:disabled="submitActive" block type="submit" class="btn-submit">Entrar</b-button>
+        <div class="create-account">
+          <h6 class="text-center">Não possui conta?</h6>
+          <router-link to="/cadastro">
+            <b-button block class="btn-account">Criar Conta</b-button>
+          </router-link>
+        </div>
       </b-form>
     </b-container>
 </template>
@@ -40,6 +43,7 @@ import { required, minLength } from "vuelidate/lib/validators";
     mixins: [validationMixin],
     data() {
       return {
+        signUp: false,
         submitActive: false,
         form: {
           email: "",
@@ -122,31 +126,90 @@ import { required, minLength } from "vuelidate/lib/validators";
     },
   }
 </script>
-<style>
-  .flex-login {
-    width: 375px;
-    height: 667px;
-    display:flex;
-    flex-flow:row nowrap;
+<style lang="scss" scoped>
+  .container {
+    display: flex;
+    flex-flow: column wrap;
     justify-content: center;
-    align-items: center;
+    align-items: center;  
   }
-  .form-login {
-    min-width: 35%;
-    height: 20%;
-  }
-  .btn-color {
-    background-color: #ff8c00 !important;
-  }
-  .btn-space {
-    margin-bottom: 5px;
-  }
-  body {
-    background-image: url("../../../assets/bg.png");
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-size: cover;
-    background-color: #464646;
-  }
+  
+  form {
+    position:fixed;
+    width:100%;
+    height: 500px;
+    min-width: 300px;
+    max-width: 500px;
+    margin-top: 850px;
+    padding: 90px 60px;
+    border-radius: 10px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, .2),
+                0 10px 10px rgba(0, 0, 0, .2);
+    background: linear-gradient(to bottom, #efefef, #ccc);
+    transition: all .5s ease-in-out;
+
+    input {
+      background-color: #eee;
+      border: none;
+      padding: 8px 15px;
+      margin: 6px 0;
+      border-radius: 15px;
+      border-bottom: 1px solid #ddd;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, .4), 
+                        0 -1px 1px #fff, 
+                        0 1px 0 #fff;
+      &:focus {
+        outline: none;
+        background-color: #fff;
+      }
+    }
+    .create-account {
+      h6 {
+        margin-top:60px;
+        margin-bottom: 20px;
+      }
+    }
+
+    .btn-submit {
+      border: 1px solid #ff8c00;
+      background-color: #ff8c00;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: bold;
+      padding: 10px 40px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform .1s ease-in;
+    
+      &:active {
+        transform: scale(.9);
+      }
+
+      &:focus {
+        outline: none;
+      }
+    }
+
+    .btn-account {
+      border: 1px solid #6c757d;
+      background-color: #6c757d;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: bold;
+      padding: 10px 40px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform .1s ease-in;
+    
+      &:active {
+        transform: scale(.9);
+      }
+
+      &:focus {
+        outline: none;
+      }
+    }
+}
 </style>

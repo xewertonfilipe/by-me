@@ -1,8 +1,8 @@
 <template>
-  <b-container class="flex-account">
+  <b-container class="container">
     <b-form @submit.stop.prevent="register" class="form-account">
       <b-form-group id="account-email">
-        <b-form-input class="text-center"
+        <b-form-input
           id="input-account-email"
           v-model="$v.form.email.$model"
           :state="validateState('email')"
@@ -14,7 +14,7 @@
         <b-form-invalid-feedback id="required-email">Obrigatório.</b-form-invalid-feedback>
       </b-form-group>
       <b-form-group id="account-password">
-        <b-form-input class="text-center"
+        <b-form-input
           id="input-password"
           v-model="$v.form.password.$model"
           :state="validateState('password')"
@@ -24,9 +24,10 @@
         ></b-form-input>
         <b-form-invalid-feedback id="required-password">Obrigatório.</b-form-invalid-feedback>
       </b-form-group>
-      <b-button v-bind:disabled="submitActive" block type="submit" class="btn-space-account btn-color">Cadastrar</b-button>
+      <b-button v-bind:disabled="submitActive" block type="submit" class="btn-submit">Cadastrar</b-button>
+       
        <router-link to="/">
-        <b-button block >Voltar</b-button>
+        <b-button class="btn-back" block>Voltar</b-button>
       </router-link>
     </b-form>
   </b-container>
@@ -115,23 +116,85 @@ import { required, minLength } from "vuelidate/lib/validators";
     }
   }
 </script>
-<style>
-  .flex-account {
-    width: 375px;
-    height: 667px;
-    display:flex;
-    flex-flow:row nowrap;
+<style lang="scss" scoped>
+  .container {
+    display: flex;
+    flex-flow: column wrap;
     justify-content: center;
-    align-items: center;
+    align-items: center;  
   }
-  .form-account {
-    width: 30%;
-    height: 20%;
-  }
-  .btn-color {
-    background-color: #ff8c00 !important;
-  }
-  .btn-space-account {
-    margin-bottom: 5px;
-  }
+  
+  form {
+    position:fixed;
+    width:100%;
+    height: 500px;
+    min-width: 300px;
+    max-width: 500px;
+    margin-top: 850px;
+    padding: 90px 60px;
+    border-radius: 10px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, .2),
+                0 10px 10px rgba(0, 0, 0, .2);
+    background: linear-gradient(to bottom, #efefef, #ccc);
+    transition: all .5s ease-in-out;
+
+    input {
+      background-color: #eee;
+      border: none;
+      padding: 8px 15px;
+      margin: 6px 0;
+      border-radius: 15px;
+      border-bottom: 1px solid #ddd;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, .4), 
+                        0 -1px 1px #fff, 
+                        0 1px 0 #fff;
+      &:focus {
+        outline: none;
+        background-color: #fff;
+      }
+    }
+
+    .btn-submit {
+      border: 1px solid #ff8c00;
+      background-color: #ff8c00;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: bold;
+      padding: 10px 40px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform .1s ease-in;
+    
+      &:active {
+        transform: scale(.9);
+      }
+
+      &:focus {
+        outline: none;
+      }
+    }
+
+    .btn-back {
+      margin-top:100px;
+      border: 1px solid #6c757d;
+      background-color: #6c757d;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: bold;
+      padding: 10px 40px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform .1s ease-in;
+    
+      &:active {
+        transform: scale(.9);
+      }
+
+      &:focus {
+        outline: none;
+      }
+    }
+}
 </style>

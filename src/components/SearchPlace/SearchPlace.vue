@@ -140,7 +140,7 @@ export default {
                     message: "Nice",
                     rating: 5,
                     placeId: "ChIJUwgu86sZqwcRCzsc964cW84",
-                    favorite: 0,
+                    favorite: 1,
                     date: "2021-02-04 11:50:30"
                 },{
                     id: 2,

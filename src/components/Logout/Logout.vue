@@ -1,15 +1,23 @@
 <template>
     <div>
-        <b-button-group>
-            <b-dropdown icon="menu-button-wide">
-                <b-dropdown-item v-on:click="exit">Logout</b-dropdown-item>
-            </b-dropdown>
-        </b-button-group>
+        <div>
+          <b-button @click="showMsgBoxOne" class="mb-2" icon="power" aria-hidden="true" v-b-modal.modal-sm>
+            Sair
+          </b-button>
+        </div>
     </div>
 </template>
 <script>
   export default {
     methods: {
+      showMsgBoxOne() {
+        this.$bvModal.msgBoxConfirm('Voce tem certeza?')
+          .then(value => {
+            if(value) this.exit();
+          })
+          .catch({
+          })
+      },
       exit() {
         this.$store.dispatch('logout')
         .then(() => {

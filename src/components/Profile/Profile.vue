@@ -1,5 +1,5 @@
 <template>
-<div>
+<b-container>
     <div @click="showModal" class="pointer">
         <b-avatar icon="people-fill" size="3rem"></b-avatar>
         <span v-text="user.first_name" class="info_user"></span>
@@ -35,17 +35,19 @@
             </b-form-group>
             <div class="flex-profile">
                 <div>
-                    <b-icon v-on:click="enableForm" icon="pencil-square" font-scale="2"></b-icon>
+                    <b-button v-on:click="enableForm" class="btn-profile">
+                        <b-icon icon="pencil-square"></b-icon>
+                    </b-button>
                 </div>
                 <div>
-                   <b-button v-bind:disabled="submitActive" v-on:click="showLoad" type="submit" variant="success">Salvar
+                   <b-button v-bind:disabled="submitActive" v-on:click="showLoad" type="submit" variant="success" class="btn-profile">Salvar
                         <b-spinner v-show="show" label="Loading..."></b-spinner>
                     </b-button>
                 </div>
             </div>
         </b-form>
     </b-modal>
-</div>
+</b-container>
 </template>
 
 <script>
@@ -180,7 +182,7 @@ export default {
     },
 }
 </script>
-<style >
+<style lang="scss">
     .pointer {
         cursor: pointer;
     }
@@ -192,11 +194,25 @@ export default {
         display:flex;
         justify-content:space-between;
     }
+    .btn-profile {
+        font-size: 1rem !important;
+        font-weight: bold !important;
+        padding: 5px 15px !important;
+        letter-spacing: 1px !important;
+        cursor: pointer;
+        transition: transform .1s ease-in;
+        &:active {
+            transform: scale(.9);
+        }
+        &:focus {
+            outline: none;
+        }
+    }
      .spinner-border {
         width: 1rem !important;
         height: 1rem !important;
         position: absolute;
-        margin-left: -28px;
+        margin-left: -35px;
         margin-top: 5px;
     }
 </style>

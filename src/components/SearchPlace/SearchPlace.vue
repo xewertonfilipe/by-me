@@ -18,6 +18,7 @@
                                 aria-describedby="required-searchFor"
                                 autocomplete="off"
                                 placeholder="Pesquise no ByMe"
+                                :autofocus="true"
                             ></b-form-input>
                             <b-button v-bind:disabled="show" type="submit" class="btn-search" v-b-popover.hover.top="'Busca'">
                                 <b-icon icon="search"></b-icon>
@@ -38,8 +39,15 @@
                 <div class="d-flex w-100 justify-content-between">
                     <h5>{{local.name}}</h5>
                      <small>
-                         <div>
-                             <star-rating @rating-selected="setfavorite(local.place_id)" v-bind:rating="0" v-bind:max-rating="1" v-bind:show-rating="false" v-bind:star-size="30" clearable></star-rating>
+                         <div v-for="(fav, index) in allInfo.allFavorites" :key="index">
+                            <div v-if="local.place_id == fav.place">
+                                <star-rating @rating-selected="comandFavorite(local.place_id)" v-bind:rating="1" v-bind:max-rating="1" v-bind:show-rating="false" v-bind:star-size="30" clearable></star-rating>
+                            </div>
+                         </div>
+                         <div v-for="(add) in allInfo.allFavorites.slice(0,1)" :key="add.place">
+                             <div v-if="local.place_id != add.place">
+                                <star-rating @rating-selected="comandFavorite(local.place_id)" v-bind:rating="0" v-bind:max-rating="1" v-bind:show-rating="false" v-bind:star-size="30" clearable></star-rating>
+                             </div>
                          </div>
                      </small>
                 </div>
@@ -78,12 +86,8 @@
 
                                 <b-form-invalid-feedback id="required-textarea">Obrigatório.</b-form-invalid-feedback>
 
-                                <div class="spacing-top btn-color">
-                                    <b-button 
-                                        type="submit"
-                                        block
-                                        squared
-                                    >Comentar</b-button>
+                                <div class="spacing-top">
+                                    <b-button type="submit" block>Comentar</b-button>
                                 </div>
                             </b-form-group>
                         </b-form>                       
@@ -122,20 +126,17 @@ export default {
             allInfo: [],
             places: [],
             newsFavorites: [],
-            allFavorites: [],
             favorites: [],
             newsComments: [],
-            allComments: [],
             comments: [{
                     id: 1,
-                    userId: 1,
+                    userId: 2,
                     Name: "",
                     email: "",
                     message: "Ok.",
                     rating: 3,
-                    placeId: "ChIJUwgu86sZqwcRCzsc964cW84",
+                    placeId: "ChIJgXhmMncZqwcRHewjfbi1M08",
                     favorite: 1,
-                    date: "2021-02-02 11:50:30"
                 },{
                     id: 2,
                     userId: 3,
@@ -143,9 +144,8 @@ export default {
                     email: "",
                     message: "Nice",
                     rating: 5,
-                    placeId: "ChIJUwgu86sZqwcRCzsc964cW84",
+                    placeId: "ChIJM2at6dUbqwcRNt2O4T6ONBc",
                     favorite: 1,
-                    date: "2021-02-04 11:50:30"
                 },{
                     id: 2,
                     userId: 4,
@@ -154,18 +154,16 @@ export default {
                     message: "Its god",
                     rating: 5,
                     placeId: "ChIJUwgu86sZqwcRCzsc964cW84",
-                    favorite: 0,
-                    date: "2021-02-05 11:50:30"
+                    favorite: 1,
                 },{
                     id: 2,
-                    userId: 4,
+                    userId: 2,
                     Name: "",
                     email: "",
                     message: "Its great!",
                     rating: 5,
                     placeId: "ChIJUwgu86sZqwcRCzsc964cW84",
-                    favorite: 0,
-                    date: "2021-02-07 11:50:30"
+                    favorite: 1,
             }],
         }
     },
@@ -214,6 +212,7 @@ export default {
                 this.$axios.get(URL)
                 .then(response => {
                     this.places = response.data.results;
+                    this.listFavorites();
                     this.allData();
                     this.stopLoad();
                 })
@@ -240,37 +239,53 @@ export default {
             this.allInfo = {
                 allComments: [...this.comments, ...this.newsComments],
                 places: this.places,
-                newsFavorites: this.newsFavorites
-            } 
-        },
-        setfavorite(placeId) {
-            this.favorite = true;
-            // this array: user, placeId, favorite.
-            this.newsFavorites.push({user: 2, placeId: placeId, favorite: 1});
-            console.log("Favorito", this.favorite);
-            this.comandFavorite();
-        },
-        comandFavorite() {
-            if (this.getFavorite()) {
-                this.favorite = false;
-                return this.toastFavorite();
+                allFavorites: [...this.favorites, ...this.newsFavorites]
             }
-            if (!this.getFavorite()) {
-                this.favorite = true;
+        },
+        listFavorites() {
+            //Param: id_user_logged = 2
+            this.favorites = [];
+            this.comments.map((comment) => {
+                if(comment.userId === 2) {
+                    this.favorites.push({
+                        place: comment.placeId,
+                        fav: comment.favorite,
+                        user: comment.userId
+                    })
+                }
+            })
+        },
+        addFavorite(placeId) {
+            // Param: id_user_logged = 2
+            this.newsFavorites.push({user: 2, placeId: placeId, favorite: 1});
+        },
+        removeFavorite(placeId) {
+
+        },
+        comandFavorite(placeId) {
+            if (!this.getFavorite(placeId)) {
+                this.addFavorite(placeId);
+                return this.toastFavorite("success");
+            }
+            if (this.getFavorite(placeId)) {
+                this.removeFavorite(placeId)
                 return this.toastRemoveFavorite();
             }
         },
         getFavorite() {
-            return this.favorite;
+            const fav = this.newsFavorites.map((item) => {
+                return item;
+            })
+            return fav.placeId;
         },
         addComments(index, place_id) {
             if(this.validateForm()) {
                 return;
             }
             this.newsComments.push({
-                userId: 20,
+                userId: 2, //user logged
                 Name: "",  //user logged
-                email: "",
+                email: "", //user logged
                 message: this.$v.form.text.$model,
                 rating: this.getRating(),
                 placeId: place_id,
@@ -301,15 +316,6 @@ export default {
         hideModal(index) {
             this.$refs[index][0].hide()
         },
-        toast(text, type, variant, error) {
-        this.$bvToast.toast(text, {
-          title: type,
-          variant: variant,
-          solid: true
-        })
-        console.log("Error login:", error);
-        this.redirect(error);
-      },
         toastFavorite(variant) {
             this.$bvToast.toast('Adicionado!', {
                 title: `Favorito`,
@@ -353,7 +359,6 @@ export default {
                     width: 50%;
                 }
             }
-    
             .list-group {
                 border: #000 1px solid;
                 margin: 2%;
@@ -375,7 +380,6 @@ export default {
                 &:active {
                     transform: scale(.9);
                 }
-
                 &:focus {
                     outline: none;
                 }
@@ -391,12 +395,10 @@ export default {
                 &:active {
                     transform: scale(.9);
                 }
-
                 &:focus {
                     outline: none;
                 }
             }
-
             .btn-comments {
                 border: 1px solid #00e1ff !important;
                 background-color: #0e7a9b !important;

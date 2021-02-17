@@ -76,10 +76,10 @@ import { required, minLength } from "vuelidate/lib/validators";
         return new Promise(() => {
            this.$store.dispatch('login', data)
           .then(() => {
-            this.toastSuccess("success");
+            this.toast("Logado com sucesso!","Sucesso", "success");
           })
-          .catch(() => {
-            this.toastError("danger");
+          .catch((error) => {
+            this.toast("Erro ao efetuar login!","Erro", "danger", error);
           })
         })
       },
@@ -104,25 +104,23 @@ import { required, minLength } from "vuelidate/lib/validators";
       disableSubmit() {
           this.submitActive = true;
       },
-      toastSuccess(variant) {
-        this.$bvToast.toast('Logado com sucesso!', {
-          title: `Sucesso`,
+      toast(text, type, variant, error) {
+        this.$bvToast.toast(text, {
+          title: type,
           variant: variant,
           solid: true
         })
-        setTimeout(() => {
-          this.$router.push({name: "app"});
-          this.enableSubmit();
-        },1000);
+        console.log("Error login:", error);
+        this.redirect(error);
       },
-      toastError(variant) {
-        this.$bvToast.toast('Erro ao efetuar login!', {
-          title: `Erro`,
-          variant: variant,
-          solid: true
-        })
+      redirect(error) {
         this.enableSubmit();
-      },
+        if(!error) {
+            setTimeout(() => {
+            this.$router.push({name: "app"});
+          },1000);
+        }
+      }
     },
   }
 </script>

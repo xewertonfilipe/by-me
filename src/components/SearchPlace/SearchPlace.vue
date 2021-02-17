@@ -259,7 +259,7 @@ export default {
             // Param: id_user_logged = 2
             this.newsFavorites.push({user: 2, placeId: placeId, favorite: 1});
         },
-        removeFavorite(placeId) {
+        removeFavorite() {
 
         },
         comandFavorite(placeId) {

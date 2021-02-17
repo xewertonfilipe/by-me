@@ -110,7 +110,6 @@ import { required, minLength } from "vuelidate/lib/validators";
           variant: variant,
           solid: true
         })
-        console.log("Error login:", error);
         this.redirect(error);
       },
       redirect(error) {
@@ -120,7 +119,7 @@ import { required, minLength } from "vuelidate/lib/validators";
             this.$router.push({name: "app"});
           },1000);
         }
-      }
+      },
     },
   }
 </script>

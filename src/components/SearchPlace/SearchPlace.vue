@@ -6,7 +6,9 @@
                     <b-form-group id="search-place">
                         <b-input-group>
                             <b-input-group-prepend>
-                                <b-button variant="outline-secondary" v-on:click.prevent="locate">Permitir localização</b-button>
+                                <b-button v-on:click.prevent="locate" variant="outline-secondary" class="btn-search" v-b-popover.hover.top="'Localização'">
+                                    <b-icon icon="disc" animation="throb"></b-icon>
+                                </b-button>
                             </b-input-group-prepend>
                             <b-form-input class="text-center"
                                 id="input-search-place"
@@ -15,8 +17,10 @@
                                 type="text"
                                 aria-describedby="required-searchFor"
                                 autocomplete="off"
+                                placeholder="Pesquise no ByMe"
                             ></b-form-input>
-                            <b-button v-bind:disabled="show" type="submit">Buscar
+                            <b-button v-bind:disabled="show" type="submit" class="btn-search" v-b-popover.hover.top="'Busca'">
+                                <b-icon icon="search"></b-icon>
                                 <b-spinner v-show="show" label="Loading..."></b-spinner>
                             </b-button>
                         </b-input-group>
@@ -41,8 +45,8 @@
                 </div>
                 <div>{{local.vicinity}}</div>
                 <div>
-                    <b-button v-on:click="showModal(index), allData()" class="btn-comments" id="show-btn">Comentários</b-button>
-                    <b-button v-on:click="showModal(index+'id')" class="btn-rate" id="show-btn-rate" >Avaliar</b-button>
+                    <b-button v-on:click="showModal(index), allData()" class="btn-place btn-comments" id="show-btn">Comentários</b-button>
+                    <b-button v-on:click="showModal(index+'id')" class="btn-place btn-rate" id="show-btn-rate" >Avaliar</b-button>
                     <b-modal :ref="index" hide-footer class="overflow">
                         <template #modal-title>
                         </template>
@@ -215,6 +219,7 @@ export default {
                 })
                 .catch(() => {
                     this.toastError("danger")
+                    this.stopLoad();
                 })
             })
         },
@@ -296,6 +301,15 @@ export default {
         hideModal(index) {
             this.$refs[index][0].hide()
         },
+        toast(text, type, variant, error) {
+        this.$bvToast.toast(text, {
+          title: type,
+          variant: variant,
+          solid: true
+        })
+        console.log("Error login:", error);
+        this.redirect(error);
+      },
         toastFavorite(variant) {
             this.$bvToast.toast('Adicionado!', {
                 title: `Favorito`,
@@ -348,12 +362,25 @@ export default {
                 width: 1rem !important;
                 height: 1rem !important;
                 position: absolute;
-                margin-left: -28px;
-                margin-top: 5px;
+                margin-left: -20px;
+                margin-top: 3px;
             }
-            .btn-comments {
-                border: 1px solid #00e1ff !important;
-                background-color: #0e7a9b !important;
+            .btn-search {
+                font-size: 1rem !important;
+                font-weight: bold !important;
+                padding: 5px 15px !important;
+                letter-spacing: 1px !important;
+                cursor: pointer;
+                transition: transform .1s ease-in;
+                &:active {
+                    transform: scale(.9);
+                }
+
+                &:focus {
+                    outline: none;
+                }
+            }
+            .btn-place {
                 font-size: 1rem !important;
                 font-weight: bold !important;
                 padding: 5px 15px !important;
@@ -368,41 +395,32 @@ export default {
                 &:focus {
                     outline: none;
                 }
+            }
+
+            .btn-comments {
+                border: 1px solid #00e1ff !important;
+                background-color: #0e7a9b !important;
             }
             .btn-rate {
                 border: 1px solid #057a05 !important;
                 background-color: #057a05 !important;
-                font-size: 1rem !important;
-                font-weight: bold !important;
-                padding: 5px 15px !important;
-                letter-spacing: 1px !important;
-                cursor: pointer;
-                transition: transform .1s ease-in;
-                margin: 20px 5px 0px 0px;
-                &:active {
-                    transform: scale(.9);
-                }
-
-                &:focus {
-                    outline: none;
-                }
             }
             .spacing-top {
                 margin-top: 5px;
             }
-            .spacing-start {
-                margin-bottom:4%;
-            }
             .overflow {
-                overflow-y:auto !important
-            }
-            .vue-star-rating {
-                display:block !important;
-                margin-top: -2%;
-                margin-bottom: 7%;
+                overflow-y: auto !important
             }
             .btn-color {
             background-color: #ff8c00 !important;
         }
+    }
+    .spacing-start {
+        margin-bottom:4% !important;
+    }
+    .vue-star-rating {
+        display: block !important;
+        margin-top: -2%;
+        margin-bottom: 7% !important;
     }
 </style>

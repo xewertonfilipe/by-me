@@ -1,8 +1,8 @@
 <template>
-    <div>
-        <Offline />
-        <FormAccount />
-    </div>
+  <div>
+    <Offline />
+    <FormAccount />
+  </div>
 </template>
 
 <script>

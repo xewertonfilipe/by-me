@@ -1,14 +1,25 @@
 <template>
+  <div>
     <div>
-        <div>
-          <b-button @click="showMsgBoxOne" class="mb-2" icon="power" aria-hidden="true" v-b-modal.modal-sm>
-            Sair
-          </b-button>
-        </div>
+      <b-button
+        v-b-modal.modal-sm
+        class="mb-2"
+        icon="power"
+        aria-hidden="true"
+        @click="showMsgBoxOne"
+      >
+        Sair
+      </b-button>
     </div>
+  </div>
 </template>
 <script>
   export default {
+    computed: {
+      isLoggedIn() { 
+        return this.$store.getters.isLoggedIn
+      }
+    },
     methods: {
       showMsgBoxOne() {
         this.$bvModal.msgBoxConfirm('Voce tem certeza?')
@@ -23,11 +34,6 @@
         .then(() => {
           this.$router.push('/')
         })
-      }
-    },
-    computed: {
-      isLoggedIn() { 
-        return this.$store.getters.isLoggedIn
       }
     },
   }

@@ -1,53 +1,83 @@
 <template>
-<b-container>
-    <div @click="showModal" class="pointer">
-        <b-avatar icon="people-fill" size="3rem"></b-avatar>
-        <span v-text="user.first_name" class="info_user"></span>
+  <b-container>
+    <div
+      class="pointer"
+      @click="showModal"
+    >
+      <b-avatar
+        icon="people-fill"
+        size="3rem"
+      />
+      <span
+        class="info_user"
+        v-text="user.first_name"
+      />
     </div>
-    <b-modal ref="my-modal" hide-footer @hide="loadData">
-        <template #modal-title>
-            Perfil
-        </template>
-        <b-form @submit.stop.prevent="updateUser">
-            <b-form-group id="profile-first-name">
-                <b-form-input
-                :readonly="inputActive"
-                id="input-first-name"
-                v-model="form.first_name"
-                :state="validateState('first_name')"
-                type="text"
-                placeholder="Nome"
-                aria-describedby="required-name"
-                ></b-form-input>
-                <b-form-invalid-feedback id="required-name">Obrigatório.</b-form-invalid-feedback>
-            </b-form-group>
-            <b-form-group id="profile-email">
-                <b-form-input
-                :readonly="inputActive"
-                id="input-email"
-                v-model="form.email"
-                :state="validateState('email')"
-                type="email"
-                placeholder="E-mail"
-                aria-describedby="required-email"
-                ></b-form-input>
-                <b-form-invalid-feedback id="required-email">Obrigatório.</b-form-invalid-feedback>
-            </b-form-group>
-            <div class="flex-profile">
-                <div>
-                    <b-button v-on:click="enableForm" class="btn-profile">
-                        <b-icon icon="pencil-square"></b-icon>
-                    </b-button>
-                </div>
-                <div>
-                   <b-button v-bind:disabled="submitActive" v-on:click="showLoad" type="submit" variant="success" class="btn-profile">Salvar
-                        <b-spinner v-show="show" label="Loading..."></b-spinner>
-                    </b-button>
-                </div>
-            </div>
-        </b-form>
+    <b-modal
+      ref="my-modal"
+      hide-footer
+      @hide="loadData"
+    >
+      <template #modal-title>
+        Perfil
+      </template>
+      <b-form @submit.stop.prevent="updateUser">
+        <b-form-group id="profile-first-name">
+          <b-form-input
+            id="input-first-name"
+            v-model="form.first_name"
+            :readonly="inputActive"
+            :state="validateState('first_name')"
+            type="text"
+            placeholder="Nome"
+            aria-describedby="required-name"
+          />
+          <b-form-invalid-feedback id="required-name">
+            Obrigatório.
+          </b-form-invalid-feedback>
+        </b-form-group>
+        <b-form-group id="profile-email">
+          <b-form-input
+            id="input-email"
+            v-model="form.email"
+            :readonly="inputActive"
+            :state="validateState('email')"
+            type="email"
+            placeholder="E-mail"
+            aria-describedby="required-email"
+          />
+          <b-form-invalid-feedback id="required-email">
+            Obrigatório.
+          </b-form-invalid-feedback>
+        </b-form-group>
+        <div class="flex-profile">
+          <div>
+            <b-button
+              class="btn-profile"
+              @click="enableForm"
+            >
+              <b-icon icon="pencil-square" />
+            </b-button>
+          </div>
+          <div>
+            <b-button
+              :disabled="submitActive"
+              type="submit"
+              variant="success"
+              class="btn-profile"
+              @click="showLoad"
+            >
+              Salvar
+              <b-spinner
+                v-show="show"
+                label="Loading..."
+              />
+            </b-button>
+          </div>
+        </div>
+      </b-form>
     </b-modal>
-</b-container>
+  </b-container>
 </template>
 
 <script>

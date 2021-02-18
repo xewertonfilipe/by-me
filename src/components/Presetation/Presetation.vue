@@ -1,11 +1,14 @@
 <template>
-<div>
-    <b-container fluid class="flex-presetation gradient">
-        <div><Profile /></div>
-        <div><Logout /></div>
+  <div>
+    <b-container
+      fluid
+      class="flex-presetation gradient"
+    >
+      <div><Profile /></div>
+      <div><Logout /></div>
     </b-container>
-        <SearchPlace />
-</div>
+    <SearchPlace />
+  </div>
 </template>
 
 <script>

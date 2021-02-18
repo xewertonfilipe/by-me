@@ -1,38 +1,56 @@
 <template>
-<b-container class="container">
-      <b-form @submit.stop.prevent="login">
-        <b-form-group id="login-email">
-          <b-form-input
-            id="input-login-email"
-            v-model="$v.form.email.$model"
-            :state="validateState('email')"
-            type="email"
-            placeholder="E-mail"
-            aria-describedby="required-email"
-            autocomplete="off"
-          ></b-form-input>
-          <b-form-invalid-feedback id="required-email">Obrigatório.</b-form-invalid-feedback>
-        </b-form-group>
-        <b-form-group id="login-pass">
-          <b-form-input
-            id="input-login-pass"
-            v-model="$v.form.pass.$model"
-            :state="validateState('pass')"
-            type="password"
-            placeholder="Senha"
-            aria-describedby="required-pass"
-          ></b-form-input>
-          <b-form-invalid-feedback id="required-pass">Obrigatório.</b-form-invalid-feedback>
-        </b-form-group>
-        <b-button v-bind:disabled="submitActive" block type="submit" class="btn-submit">Entrar</b-button>
-        <div class="create-account">
-          <h6 class="text-center">Não possui conta?</h6>
-          <router-link to="/cadastro">
-            <b-button block class="btn-account">Criar Conta</b-button>
-          </router-link>
-        </div>
-      </b-form>
-    </b-container>
+  <b-container class="container">
+    <b-form @submit.stop.prevent="login">
+      <b-form-group id="login-email">
+        <b-form-input
+          id="input-login-email"
+          v-model="$v.form.email.$model"
+          :state="validateState('email')"
+          type="email"
+          placeholder="E-mail"
+          aria-describedby="required-email"
+          autocomplete="off"
+        />
+        <b-form-invalid-feedback id="required-email">
+          Obrigatório.
+        </b-form-invalid-feedback>
+      </b-form-group>
+      <b-form-group id="login-pass">
+        <b-form-input
+          id="input-login-pass"
+          v-model="$v.form.pass.$model"
+          :state="validateState('pass')"
+          type="password"
+          placeholder="Senha"
+          aria-describedby="required-pass"
+        />
+        <b-form-invalid-feedback id="required-pass">
+          Obrigatório.
+        </b-form-invalid-feedback>
+      </b-form-group>
+      <b-button
+        :disabled="submitActive"
+        block
+        type="submit"
+        class="btn-submit"
+      >
+        Entrar
+      </b-button>
+      <div class="create-account">
+        <h6 class="text-center">
+          Não possui conta?
+        </h6>
+        <router-link to="/cadastro">
+          <b-button
+            block
+            class="btn-account"
+          >
+            Criar Conta
+          </b-button>
+        </router-link>
+      </div>
+    </b-form>
+  </b-container>
 </template>
 
 <script>

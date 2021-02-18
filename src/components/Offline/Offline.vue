@@ -1,7 +1,13 @@
 <template>
-    <div>
-        <b-button class="btn-off" block v-if="isOffline">Aplicação offline</b-button>
-    </div>
+  <div>
+    <b-button
+      v-if="isOffline"
+      class="btn-off"
+      block
+    >
+      Aplicação offline
+    </b-button>
+  </div>
 </template>
 <script>
 export default {

@@ -1,101 +1,202 @@
 <template>
-    <b-container class="container-search-place">
-        <b-row>
-            <b-col>
-                <b-form @submit.stop.prevent="findPlaces" class="form-search-place">
-                    <b-form-group id="search-place">
-                        <b-input-group>
-                            <b-input-group-prepend>
-                                <b-button v-on:click.prevent="locate" variant="outline-secondary" class="btn-search" v-b-popover.hover.top="'Localização'">
-                                    <b-icon icon="disc" animation="throb"></b-icon>
-                                </b-button>
-                            </b-input-group-prepend>
-                            <b-form-input class="text-center"
-                                id="input-search-place"
-                                v-model="$v.form.searchFor.$model"
-                                :state="validateState('searchFor')"
-                                type="text"
-                                aria-describedby="required-searchFor"
-                                autocomplete="off"
-                                placeholder="Pesquise no ByMe"
-                                :autofocus="true"
-                            ></b-form-input>
-                            <b-button v-bind:disabled="show" type="submit" class="btn-search" v-b-popover.hover.top="'Busca'">
-                                <b-icon icon="search"></b-icon>
-                                <b-spinner v-show="show" label="Loading..."></b-spinner>
-                            </b-button>
-                        </b-input-group>
-                    </b-form-group>
-                </b-form>
-            </b-col>
-        </b-row>
-        <b-card v-show="show">
-            <b-skeleton animation="wave" width="85%"></b-skeleton>
-            <b-skeleton animation="wave" width="55%"></b-skeleton>
-            <b-skeleton animation="wave" width="70%"></b-skeleton>
-        </b-card>
-        <b-list-group v-for="(local, index) in allInfo.places" :key="index">
-            <b-list-group-item>
-                <div class="d-flex w-100 justify-content-between">
-                    <h5>{{local.name}}</h5>
-                     <small>
-                         <div v-for="(fav, index) in allInfo.allFavorites" :key="index">
-                            <div v-if="local.place_id == fav.place">
-                                <star-rating @rating-selected="comandFavorite(local.place_id)" v-bind:rating="1" v-bind:max-rating="1" v-bind:show-rating="false" v-bind:star-size="30" clearable></star-rating>
-                            </div>
-                         </div>
-                         <div v-for="(add) in allInfo.allFavorites.slice(0,1)" :key="add.place">
-                             <div v-if="local.place_id != add.place">
-                                <star-rating @rating-selected="comandFavorite(local.place_id)" v-bind:rating="0" v-bind:max-rating="1" v-bind:show-rating="false" v-bind:star-size="30" clearable></star-rating>
-                             </div>
-                         </div>
-                     </small>
-                </div>
-                <div>{{local.vicinity}}</div>
-                <div>
-                    <b-button v-on:click="showModal(index), allData()" class="btn-place btn-comments" id="show-btn">Comentários</b-button>
-                    <b-button v-on:click="showModal(index+'id')" class="btn-place btn-rate" id="show-btn-rate" >Avaliar</b-button>
-                    <b-modal :ref="index" hide-footer class="overflow">
-                        <template #modal-title>
-                        </template>
-                            <b-card-group v-for="(comment, index) in allInfo.allComments" :key="index" class="d-block text-center" deck style="max-height: 20rem;">
-                                <div v-if="comment.placeId == local.place_id">
-                                    <b-card header="User comment" class="text-center spacing-top">
-                                        <star-rating read-only v-model="comment.rating" v-bind:show-rating="false" v-bind:star-size="25" class="start-comment"></star-rating>
-                                        <b-card-text class="message">{{comment.message}}</b-card-text>
-                                    </b-card>
-                                </div>
-                            </b-card-group>
-                    </b-modal>
-                    <b-modal :ref="index+'id'" hide-footer @hidden="clearValue">
-                        <template #modal-title>
-                            {{local.name}}
-                        </template>
-                        <b-form @submit.stop.prevent="addComments(index, local.place_id)">
-                            <star-rating @rating-selected="setRating" v-bind:show-rating="false" v-bind:star-size="30" class="spacing-start"></star-rating>
-                            <b-form-group id="comment-text">
-                                <b-form-textarea class="overflow"
-                                    id="comment-textarea"
-                                    v-model="$v.form.text.$model"
-                                    :state="validateState('text')"
-                                    placeholder="Comentário..."
-                                    rows="1"
-                                    max-rows="3"
-                                    aria-describedby="required-textarea"
-                                ></b-form-textarea>
+  <b-container class="container-search-place">
+    <b-row>
+      <b-col>
+        <b-form
+          class="form-search-place"
+          @submit.stop.prevent="findPlaces"
+        >
+          <b-form-group id="search-place">
+            <b-input-group>
+              <b-input-group-prepend>
+                <b-button
+                  v-b-popover.hover.top="'Localização'"
+                  variant="outline-secondary"
+                  class="btn-search"
+                  @click.prevent="locate"
+                >
+                  <b-icon
+                    icon="disc"
+                    animation="throb"
+                  />
+                </b-button>
+              </b-input-group-prepend>
+              <b-form-input
+                id="input-search-place"
+                v-model="$v.form.searchFor.$model"
+                class="text-center"
+                :state="validateState('searchFor')"
+                type="text"
+                aria-describedby="required-searchFor"
+                autocomplete="off"
+                placeholder="Pesquise no ByMe"
+                :autofocus="true"
+              />
+              <b-button
+                v-b-popover.hover.top="'Busca'"
+                :disabled="show"
+                type="submit"
+                class="btn-search"
+              >
+                <b-icon icon="search" />
+                <b-spinner
+                  v-show="show"
+                  label="Loading..."
+                />
+              </b-button>
+            </b-input-group>
+          </b-form-group>
+        </b-form>
+      </b-col>
+    </b-row>
+    <b-card v-show="show">
+      <b-skeleton
+        animation="wave"
+        width="85%"
+      />
+      <b-skeleton
+        animation="wave"
+        width="55%"
+      />
+      <b-skeleton
+        animation="wave"
+        width="70%"
+      />
+    </b-card>
+    <b-list-group
+      v-for="(local, index) in allInfo.places"
+      :key="index"
+    >
+      <b-list-group-item>
+        <div class="d-flex w-100 justify-content-between">
+          <h5>{{ local.name }}</h5>
+          <small>
+            <div
+              v-for="(fav, index) in allInfo.allFavorites"
+              :key="index"
+            >
+              <div v-if="local.place_id == fav.place">
+                <star-rating
+                  :rating="1"
+                  :max-rating="1"
+                  :show-rating="false"
+                  :star-size="30"
+                  clearable
+                  @rating-selected="comandFavorite(local.place_id)"
+                />
+              </div>
+            </div>
+            <div
+              v-for="(add) in allInfo.allFavorites.slice(0,1)"
+              :key="add.place"
+            >
+              <div v-if="local.place_id != add.place">
+                <star-rating
+                  :rating="0"
+                  :max-rating="1"
+                  :show-rating="false"
+                  :star-size="30"
+                  clearable
+                  @rating-selected="comandFavorite(local.place_id)"
+                />
+              </div>
+            </div>
+          </small>
+        </div>
+        <div>{{ local.vicinity }}</div>
+        <div>
+          <b-button
+            id="show-btn"
+            class="btn-place btn-comments"
+            @click="showModal(index), allData()"
+          >
+            Comentários
+          </b-button>
+          <b-button
+            id="show-btn-rate"
+            class="btn-place btn-rate"
+            @click="showModal(index+'id')"
+          >
+            Avaliar
+          </b-button>
+          <b-modal
+            :ref="index"
+            hide-footer
+            class="overflow"
+          >
+            <template #modal-title />
+            <b-card-group
+              v-for="(comment, index) in allInfo.allComments"
+              :key="index"
+              class="d-block text-center"
+              deck
+              style="max-height: 20rem;"
+            >
+              <div v-if="comment.placeId == local.place_id">
+                <b-card
+                  header="User comment"
+                  class="text-center spacing-top"
+                >
+                  <star-rating
+                    v-model="comment.rating"
+                    read-only
+                    :show-rating="false"
+                    :star-size="25"
+                    class="start-comment"
+                  />
+                  <b-card-text class="message">
+                    {{ comment.message }}
+                  </b-card-text>
+                </b-card>
+              </div>
+            </b-card-group>
+          </b-modal>
+          <b-modal
+            :ref="index+'id'"
+            hide-footer
+            @hidden="clearValue"
+          >
+            <template #modal-title>
+              {{ local.name }}
+            </template>
+            <b-form @submit.stop.prevent="addComments(index, local.place_id)">
+              <star-rating
+                :show-rating="false"
+                :star-size="30"
+                class="spacing-start"
+                @rating-selected="setRating"
+              />
+              <b-form-group id="comment-text">
+                <b-form-textarea
+                  id="comment-textarea"
+                  v-model="$v.form.text.$model"
+                  class="overflow"
+                  :state="validateState('text')"
+                  placeholder="Comentário..."
+                  rows="1"
+                  max-rows="3"
+                  aria-describedby="required-textarea"
+                />
 
-                                <b-form-invalid-feedback id="required-textarea">Obrigatório.</b-form-invalid-feedback>
+                <b-form-invalid-feedback id="required-textarea">
+                  Obrigatório.
+                </b-form-invalid-feedback>
 
-                                <div class="spacing-top">
-                                    <b-button type="submit" block>Comentar</b-button>
-                                </div>
-                            </b-form-group>
-                        </b-form>                       
-                    </b-modal>
+                <div class="spacing-top">
+                  <b-button
+                    type="submit"
+                    block
+                  >
+                    Comentar
+                  </b-button>
                 </div>
-            </b-list-group-item>
-        </b-list-group>
-    </b-container>
+              </b-form-group>
+            </b-form>                       
+          </b-modal>
+        </div>
+      </b-list-group-item>
+    </b-list-group>
+  </b-container>
 </template>
 
 <script>

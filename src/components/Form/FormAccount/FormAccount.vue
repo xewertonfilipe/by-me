@@ -1,6 +1,9 @@
 <template>
   <b-container class="container">
-    <b-form @submit.stop.prevent="register" class="form-account">
+    <b-form
+      class="form-account"
+      @submit.stop.prevent="register"
+    >
       <b-form-group id="account-email">
         <b-form-input
           id="input-account-email"
@@ -10,8 +13,10 @@
           placeholder="E-mail"
           aria-describedby="required-email"
           autocomplete="off"
-        ></b-form-input>
-        <b-form-invalid-feedback id="required-email">Obrigatório.</b-form-invalid-feedback>
+        />
+        <b-form-invalid-feedback id="required-email">
+          Obrigatório.
+        </b-form-invalid-feedback>
       </b-form-group>
       <b-form-group id="account-password">
         <b-form-input
@@ -21,13 +26,27 @@
           type="password"
           placeholder="Senha"
           aria-describedby="required-password"
-        ></b-form-input>
-        <b-form-invalid-feedback id="required-password">Obrigatório.</b-form-invalid-feedback>
+        />
+        <b-form-invalid-feedback id="required-password">
+          Obrigatório.
+        </b-form-invalid-feedback>
       </b-form-group>
-      <b-button v-bind:disabled="submitActive" block type="submit" class="btn-submit">Cadastrar</b-button>
+      <b-button
+        :disabled="submitActive"
+        block
+        type="submit"
+        class="btn-submit"
+      >
+        Cadastrar
+      </b-button>
        
-       <router-link to="/">
-        <b-button class="btn-back" block>Voltar</b-button>
+      <router-link to="/">
+        <b-button
+          class="btn-back"
+          block
+        >
+          Voltar
+        </b-button>
       </router-link>
     </b-form>
   </b-container>
